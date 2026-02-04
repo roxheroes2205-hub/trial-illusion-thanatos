@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trial Illusion Master Rank - Survey Dashboard</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Lucide React icons as inline SVG components
+        const Users = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+        );
+
+        const Calendar = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        );
+
+        const Award = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+        );
+
+        const RefreshCw = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+        );
+
+        const AlertCircle = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const CheckCircle = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const Clock = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const SurveyDashboard = () => {
+          const [responses, setResponses] = useState([]);
+          const [loading, setLoading] = useState(true);
+          const [error, setError] = useState('');
+          const [lastUpdate, setLastUpdate] = useState(null);
+
+          const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7yYEdRoFayPUvpP678ge6jqk2aGdWlUFFAnFlN5eGo3Y3EcpeNSBMAanL_7IqNUe5gwATBaoQ1eAH/pub?output=csv';
+
+          const parseCsvData = (csvText) => {
+            const lines = csvText.split('\n');
+            const dataRows = lines.slice(1).filter(line => line.trim());
+            
+            const parsedData = dataRows.map(line => {
+              const fields = [];
+              let current = '';
+              let inQuotes = false;
+              
+              for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                  inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                  fields.push(current.trim());
+                  current = '';
+                } else {
+                  current += char;
+                }
+              }
+              fields.push(current.trim());
+              
+              return {
+                timestamp: fields[0] || '',
+                name: fields[1] || '',
+                availability: fields[2] || '',
+                hasHeadgear: fields[3] || '',
+                wantsItems: fields[4] || '',
+                notes: fields[5] || ''
+              };
+            }).filter(row => row.name);
+            
+            return parsedData;
+          };
+
+          const fetchData = async () => {
+            setLoading(true);
+            setError('');
+            
+            try {
+              const response = await fetch(CSV_URL);
+              if (!response.ok) throw new Error('Failed to fetch data');
+              
+              const csvText = await response.text();
+              const parsedData = parseCsvData(csvText);
+              
+              setResponses(parsedData);
+              setLastUpdate(new Date());
+              setError('');
+            } catch (err) {
+              console.error('Fetch error:', err);
+              setError('Unable to load data. Make sure the Google Sheet is published to web as CSV.');
+            } finally {
+              setLoading(false);
+            }
+          };
+
+          useEffect(() => {
+            fetchData();
+            
+            // Auto-refresh every 60 seconds
+            const interval = setInterval(fetchData, 60000);
+            return () => clearInterval(interval);
+          }, []);
+
+          const parseAvailability = (availabilityString) => {
+            const days = {
+              Monday: availabilityString.includes('Monday'),
+              Tuesday: availabilityString.includes('Tuesday'),
+              Wednesday: availabilityString.includes('Wednesday'),
+              Thursday: availabilityString.includes('Thursday'),
+              Friday: availabilityString.includes('Friday'),
+              Saturday: availabilityString.includes('Saturday'),
+              Sunday: availabilityString.includes('Sunday')
+            };
+            return days;
+          };
+
+          const getDayStats = () => {
+            const stats = {
+              Monday: 0,
+              Tuesday: 0,
+              Wednesday: 0,
+              Thursday: 0,
+              Friday: 0,
+              Saturday: 0,
+              Sunday: 0
+            };
+
+            responses.forEach(response => {
+              const days = parseAvailability(response.availability);
+              Object.keys(days).forEach(day => {
+                if (days[day]) stats[day]++;
+              });
+            });
+
+            return stats;
+          };
+
+          const categorizeByNeeds = () => {
+            const categories = {
+              needBoth: [],
+              needEyes: [],
+              needMouth: [],
+              hasAll: []
+            };
+
+            responses.forEach(response => {
+              const hasHeadgear = response.hasHeadgear.toLowerCase();
+              const wantsItems = response.wantsItems.toLowerCase();
+              
+              if (hasHeadgear.includes('none')) {
+                if (wantsItems.includes('eyes') && wantsItems.includes('mouth')) {
+                  categories.needBoth.push(response);
+                } else if (wantsItems.includes('eyes')) {
+                  categories.needEyes.push(response);
+                } else if (wantsItems.includes('mouth')) {
+                  categories.needMouth.push(response);
+                }
+              } else if (hasHeadgear.includes('eyes') && !hasHeadgear.includes('mouth')) {
+                if (wantsItems.includes('mouth')) {
+                  categories.needMouth.push(response);
+                }
+              } else if (hasHeadgear.includes('mouth') && !hasHeadgear.includes('eyes')) {
+                if (wantsItems.includes('eyes')) {
+                  categories.needEyes.push(response);
+                }
+              } else if (hasHeadgear.includes('2 slot eyes') && hasHeadgear.includes('2 slot mouth')) {
+                categories.hasAll.push(response);
+              }
+            });
+
+            return categories;
+          };
+
+          const dayStats = getDayStats();
+          const needsCategories = categorizeByNeeds();
+          const totalResponses = responses.length;
+
+          if (loading && responses.length === 0) {
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+                <div className="text-white text-xl flex items-center gap-3">
+                  <RefreshCw className="w-6 h-6 animate-spin" />
+                  Loading survey data from Google Sheets...
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+              <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 mb-6 border border-purple-500/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="text-3xl font-bold text-white mb-2">Master Rank Survey Dashboard</h1>
+                      <p className="text-slate-300">Auto-refreshes every 60 seconds</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      {lastUpdate && (
+                        <div className="text-slate-400 text-sm flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          Last updated: {lastUpdate.toLocaleTimeString()}
+                        </div>
+                      )}
+                      <button
+                        onClick={fetchData}
+                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                        disabled={loading}
+                      >
+                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                        Refresh Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5" />
+                    {error}
+                  </div>
+                )}
+
+                {responses.length === 0 && !loading && (
+                  <div className="bg-yellow-500/20 border border-yellow-500 text-yellow-200 px-4 py-3 rounded-lg mb-4">
+                    No survey responses found. Make sure your Google Sheet is published to web as CSV.
+                  </div>
+                )}
+
+                {responses.length > 0 && (
+                  <>
+                    {/* Stats Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
+                        <div className="flex items-center justify-between mb-2">
+                          <Users className="w-8 h-8 text-purple-400" />
+                          <span className="text-3xl font-bold text-white">{totalResponses}</span>
+                        </div>
+                        <p className="text-slate-300">Total Responses</p>
+                      </div>
+                      
+                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
+                        <div className="flex items-center justify-between mb-2">
+                          <Award className="w-8 h-8 text-red-400" />
+                          <span className="text-3xl font-bold text-white">{needsCategories.needBoth.length}</span>
+                        </div>
+                        <p className="text-slate-300">Need Both Headgears</p>
+                      </div>
+                      
+                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
+                        <div className="flex items-center justify-between mb-2">
+                          <Award className="w-8 h-8 text-yellow-400" />
+                          <span className="text-3xl font-bold text-white">
+                            {needsCategories.needEyes.length + needsCategories.needMouth.length}
+                          </span>
+                        </div>
+                        <p className="text-slate-300">Need One Headgear</p>
+                      </div>
+                      
+                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
+                        <div className="flex items-center justify-between mb-2">
+                          <CheckCircle className="w-8 h-8 text-green-400" />
+                          <span className="text-3xl font-bold text-white">{needsCategories.hasAll.length}</span>
+                        </div>
+                        <p className="text-slate-300">Have Everything</p>
+                      </div>
+                    </div>
+
+                    {/* Availability Matrix */}
+                    <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 mb-6 border border-purple-500/30">
+                      <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                        <Calendar className="w-6 h-6 text-purple-400" />
+                        Daily Availability (8-11 PM)
+                      </h2>
+                      
+                      <div className="grid grid-cols-7 gap-2 mb-4">
+                        {Object.entries(dayStats).map(([day, count]) => {
+                          const percentage = totalResponses > 0 ? (count / totalResponses) * 100 : 0;
+                          return (
+                            <div key={day} className="text-center">
+                              <div className="bg-slate-700 rounded-lg p-4 mb-2">
+                                <div className="text-white font-bold text-xl mb-1">{count}</div>
+                                <div className="text-slate-400 text-xs">{day.slice(0, 3)}</div>
+                              </div>
+                              <div className="w-full bg-slate-700 rounded-full h-2">
+                                <div 
+                                  className="bg-purple-500 h-2 rounded-full transition-all"
+                                  style={{ width: `${percentage}%` }}
+                                ></div>
+                              </div>
+                              <div className="text-slate-400 text-xs mt-1">{Math.round(percentage)}%</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Priority Carry List */}
+                    <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 mb-6 border border-purple-500/30">
+                      <h2 className="text-2xl font-bold text-white mb-4">Priority Carry List</h2>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <h3 className="text-lg font-semibold text-red-400 mb-2">🔴 High Priority (Need Both Headgears)</h3>
+                          {needsCategories.needBoth.length === 0 ? (
+                            <p className="text-slate-400 text-sm">No members need both headgears</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {needsCategories.needBoth.map((member, idx) => (
+                                <div key={idx} className="bg-slate-700/50 rounded-lg p-3">
+                                  <div className="flex items-start justify-between">
+                                    <div>
+                                      <div className="text-white font-semibold">{member.name}</div>
+                                      <div className="text-slate-400 text-sm mt-1">
+                                        Wants: {member.wantsItems}
+                                      </div>
+                                      {member.notes && (
+                                        <div className="text-purple-300 text-sm mt-1 italic">
+                                          Note: {member.notes}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <h3 className="text-lg font-semibold text-yellow-400 mb-2">🟡 Medium Priority (Need One Headgear)</h3>
+                          {needsCategories.needEyes.length + needsCategories.needMouth.length === 0 ? (
+                            <p className="text-slate-400 text-sm">No members need one headgear</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {[...needsCategories.needEyes, ...needsCategories.needMouth].map((member, idx) => (
+                                <div key={idx} className="bg-slate-700/50 rounded-lg p-3">
+                                  <div className="flex items-start justify-between">
+                                    <div>
+                                      <div className="text-white font-semibold">{member.name}</div>
+                                      <div className="text-slate-400 text-sm mt-1">
+                                        Has: {member.hasHeadgear} | Wants: {member.wantsItems}
+                                      </div>
+                                      {member.notes && (
+                                        <div className="text-purple-300 text-sm mt-1 italic">
+                                          Note: {member.notes}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <h3 className="text-lg font-semibold text-green-400 mb-2">🟢 Flexible/Support (Have Everything)</h3>
+                          {needsCategories.hasAll.length === 0 ? (
+                            <p className="text-slate-400 text-sm">No members have all rewards yet</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {needsCategories.hasAll.map((member, idx) => (
+                                <div key={idx} className="bg-slate-700/50 rounded-lg p-3">
+                                  <div className="flex items-start justify-between">
+                                    <div>
+                                      <div className="text-white font-semibold">{member.name}</div>
+                                      <div className="text-slate-400 text-sm mt-1">
+                                        {member.wantsItems || 'Has everything needed'}
+                                      </div>
+                                      {member.notes && (
+                                        <div className="text-green-300 text-sm mt-1 italic">
+                                          Note: {member.notes}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Detailed Response Table */}
+                    <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
+                      <h2 className="text-2xl font-bold text-white mb-4">All Responses</h2>
+                      
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-white text-sm">
+                          <thead>
+                            <tr className="border-b border-purple-500/30">
+                              <th className="text-left py-3 px-2">Name</th>
+                              <th className="text-left py-3 px-2">Mon</th>
+                              <th className="text-left py-3 px-2">Tue</th>
+                              <th className="text-left py-3 px-2">Wed</th>
+                              <th className="text-left py-3 px-2">Thu</th>
+                              <th className="text-left py-3 px-2">Fri</th>
+                              <th className="text-left py-3 px-2">Sat</th>
+                              <th className="text-left py-3 px-2">Sun</th>
+                              <th className="text-left py-3 px-2">Has</th>
+                              <th className="text-left py-3 px-2">Wants</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {responses.map((response, idx) => {
+                              const days = parseAvailability(response.availability);
+                              return (
+                                <tr key={idx} className="border-b border-slate-700/50 hover:bg-slate-700/30">
+                                  <td className="py-3 px-2 font-semibold">{response.name}</td>
+                                  {Object.values(days).map((available, dayIdx) => (
+                                    <td key={dayIdx} className="py-3 px-2 text-center">
+                                      {available ? (
+                                        <span className="text-green-400 text-lg">✓</span>
+                                      ) : (
+                                        <span className="text-slate-600">-</span>
+                                      )}
+                                    </td>
+                                  ))}
+                                  <td className="py-3 px-2 text-xs text-slate-400">
+                                    {response.hasHeadgear.length > 20 
+                                      ? response.hasHeadgear.substring(0, 20) + '...'
+                                      : response.hasHeadgear}
+                                  </td>
+                                  <td className="py-3 px-2 text-xs text-purple-300">
+                                    {response.wantsItems.length > 20
+                                      ? response.wantsItems.substring(0, 20) + '...'
+                                      : response.wantsItems}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<SurveyDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
