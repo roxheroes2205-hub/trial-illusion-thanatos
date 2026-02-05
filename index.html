@@ -202,6 +202,37 @@
             border-left: 3px solid #a78bfa;
         }
 
+        .expand-row {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .expand-row td {
+            padding: 20px;
+        }
+
+        .expand-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .expand-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .expand-label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .expand-value {
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
         .center {
             text-align: center;
         }
@@ -418,6 +449,69 @@
                         <option value="No">No</option>
                     </select>
                 </div>
+
+                <div class="filter-group">
+                    <label>Available Monday</label>
+                    <select id="filterMonday">
+                        <option value="">All</option>
+                        <option value="Yes">Available</option>
+                        <option value="No">Not Available</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Available Tuesday</label>
+                    <select id="filterTuesday">
+                        <option value="">All</option>
+                        <option value="Yes">Available</option>
+                        <option value="No">Not Available</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Available Wednesday</label>
+                    <select id="filterWednesday">
+                        <option value="">All</option>
+                        <option value="Yes">Available</option>
+                        <option value="No">Not Available</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Available Thursday</label>
+                    <select id="filterThursday">
+                        <option value="">All</option>
+                        <option value="Yes">Available</option>
+                        <option value="No">Not Available</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Available Friday</label>
+                    <select id="filterFriday">
+                        <option value="">All</option>
+                        <option value="Yes">Available</option>
+                        <option value="No">Not Available</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Available Saturday</label>
+                    <select id="filterSaturday">
+                        <option value="">All</option>
+                        <option value="Yes">Available</option>
+                        <option value="No">Not Available</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Available Sunday</label>
+                    <select id="filterSunday">
+                        <option value="">All</option>
+                        <option value="Yes">Available</option>
+                        <option value="No">Not Available</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -435,82 +529,12 @@
                 <div id="playerFinderTable">
                     <div class="loading">Loading player data...</div>
                 </div>
-                
-                <!-- Detail Panel -->
-                <div id="detailPanel" class="detail-panel">
-                    <h3 id="detailName">Select a player to view details</h3>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Has 2 Slot Eyes</span>
-                            <span class="detail-value" id="detailHasEyes">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Has 2 Slot Mouth</span>
-                            <span class="detail-value" id="detailHasMouth">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Want 2 Slot Eyes</span>
-                            <span class="detail-value" id="detailWantEyes">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Want 2 Slot Mouth</span>
-                            <span class="detail-value" id="detailWantMouth">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Want Card</span>
-                            <span class="detail-value" id="detailWantCard">-</span>
-                        </div>
-                    </div>
-                    <div class="detail-item" style="margin-bottom: 12px;">
-                        <span class="detail-label">Other Wants</span>
-                        <span class="detail-value" id="detailOtherWants">-</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Notes</span>
-                        <span class="detail-value" id="detailNotes">-</span>
-                    </div>
-                </div>
             </div>
 
             <!-- Gear Tracker Tab -->
             <div id="gear-tracker" class="tab-content">
                 <div id="gearTrackerTable">
                     <div class="loading">Loading gear data...</div>
-                </div>
-                
-                <!-- Availability Detail Panel for Gear Tracker -->
-                <div id="availabilityPanel" class="detail-panel">
-                    <h3 id="availabilityName">Select a player to view availability</h3>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Monday (8-11 PM)</span>
-                            <span class="detail-value" id="availMonday">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Tuesday (8-11 PM)</span>
-                            <span class="detail-value" id="availTuesday">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Wednesday (8-11 PM)</span>
-                            <span class="detail-value" id="availWednesday">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Thursday (8-11 PM)</span>
-                            <span class="detail-value" id="availThursday">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Friday (8-11 PM)</span>
-                            <span class="detail-value" id="availFriday">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Saturday (8-11 PM)</span>
-                            <span class="detail-value" id="availSaturday">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Sunday (8-11 PM)</span>
-                            <span class="detail-value" id="availSunday">-</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -640,7 +664,8 @@
                 const availability = {};
                 days.forEach(day => {
                     const key = `${day} (8-11 PM)`;
-                    availability[day] = survey[key] === key;
+                    // The value will be the full string if selected, empty if not
+                    availability[day] = (survey[key] && survey[key].trim() !== '') ? true : false;
                 });
                 
                 return {
@@ -807,13 +832,13 @@
                             <th class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
                             <th class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
                             <th class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
-                            <th class="${getSortClass('availability.Monday')} center" onclick="sortMembers('availability.Monday')">Mon</th>
-                            <th class="${getSortClass('availability.Tuesday')} center" onclick="sortMembers('availability.Tuesday')">Tue</th>
-                            <th class="${getSortClass('availability.Wednesday')} center" onclick="sortMembers('availability.Wednesday')">Wed</th>
-                            <th class="${getSortClass('availability.Thursday')} center" onclick="sortMembers('availability.Thursday')">Thu</th>
-                            <th class="${getSortClass('availability.Friday')} center" onclick="sortMembers('availability.Friday')">Fri</th>
-                            <th class="${getSortClass('availability.Saturday')} center" onclick="sortMembers('availability.Saturday')">Sat</th>
-                            <th class="${getSortClass('availability.Sunday')} center" onclick="sortMembers('availability.Sunday')">Sun</th>
+                            <th class="center">Mon</th>
+                            <th class="center">Tue</th>
+                            <th class="center">Wed</th>
+                            <th class="center">Thu</th>
+                            <th class="center">Fri</th>
+                            <th class="center">Sat</th>
+                            <th class="center">Sun</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -821,10 +846,10 @@
 
             filteredMembers.forEach((member, index) => {
                 const rankBadgeClass = getRankBadgeClass(member.stage1Rank);
-                const isSelected = selectedMember && selectedMember.name === member.name ? 'selected' : '';
+                const isSelected = selectedMember && selectedMember.name === member.name;
                 
                 html += `
-                    <tr class="${isSelected}" onclick="selectMember(${index})">
+                    <tr class="${isSelected ? 'selected' : ''}" onclick="toggleExpandPlayer(${index})">
                         <td><strong>${member.name}</strong></td>
                         <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
                         <td class="center">${member.stage1Rank ? `<span class="badge ${rankBadgeClass}">#${member.stage1Rank}</span>` : '-'}</td>
@@ -838,6 +863,46 @@
                         <td class="center availability-check">${member.availability.Sunday ? '✓' : '-'}</td>
                     </tr>
                 `;
+                
+                // Add expandable row
+                if (isSelected) {
+                    html += `
+                        <tr class="expand-row">
+                            <td colspan="11">
+                                <div class="expand-content">
+                                    <div class="expand-item">
+                                        <span class="expand-label">Has 2 Slot Eyes</span>
+                                        <span class="expand-value">${member.hasEyes === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Has 2 Slot Mouth</span>
+                                        <span class="expand-value">${member.hasMouth === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Want 2 Slot Eyes</span>
+                                        <span class="expand-value">${formatWantField(member.wantEyes, member.earnedEyes)}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Want 2 Slot Mouth</span>
+                                        <span class="expand-value">${formatWantField(member.wantMouth, member.earnedMouth)}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Want Card</span>
+                                        <span class="expand-value">${member.wantCard ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Other Wants</span>
+                                        <span class="expand-value">${member.otherWants || '-'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Notes</span>
+                                        <span class="expand-value">${member.notes || '-'}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
             });
 
             html += '</tbody></table>';
@@ -882,10 +947,10 @@
 
             filteredMembers.forEach((member, index) => {
                 const rankBadgeClass = getRankBadgeClass(member.stage1Rank);
-                const isSelected = selectedMember && selectedMember.name === member.name ? 'selected' : '';
+                const isSelected = selectedMember && selectedMember.name === member.name;
                 
                 html += `
-                    <tr class="${isSelected}" onclick="selectMemberGearTracker(${index})">
+                    <tr class="${isSelected ? 'selected' : ''}" onclick="toggleExpandGear(${index})">
                         <td><strong>${member.name}</strong></td>
                         <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
                         <td class="center">${member.stage1Rank ? `<span class="badge ${rankBadgeClass}">#${member.stage1Rank}</span>` : '-'}</td>
@@ -899,6 +964,46 @@
                         <td class="text-cell" title="${member.notes}">${member.notes || '-'}</td>
                     </tr>
                 `;
+                
+                // Add expandable row for availability
+                if (isSelected) {
+                    html += `
+                        <tr class="expand-row">
+                            <td colspan="11">
+                                <div class="expand-content">
+                                    <div class="expand-item">
+                                        <span class="expand-label">Monday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Monday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Tuesday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Tuesday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Wednesday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Wednesday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Thursday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Thursday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Friday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Friday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Saturday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Saturday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Sunday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Sunday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
             });
 
             html += '</tbody></table>';
@@ -917,44 +1022,32 @@
             }
         }
 
-        // Select member and show details
-        function selectMember(index) {
+        // Toggle expand for Player Finder
+        function toggleExpandPlayer(index) {
             if (currentTab !== 'player-finder') return;
             
-            selectedMember = filteredMembers[index];
-            const detailPanel = document.getElementById('detailPanel');
+            // Toggle selection
+            if (selectedMember && selectedMember.name === filteredMembers[index].name) {
+                selectedMember = null;
+            } else {
+                selectedMember = filteredMembers[index];
+            }
             
-            document.getElementById('detailName').textContent = selectedMember.name;
-            document.getElementById('detailHasEyes').innerHTML = selectedMember.hasEyes === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>';
-            document.getElementById('detailHasMouth').innerHTML = selectedMember.hasMouth === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>';
-            document.getElementById('detailWantEyes').innerHTML = formatWantField(selectedMember.wantEyes, selectedMember.earnedEyes);
-            document.getElementById('detailWantMouth').innerHTML = formatWantField(selectedMember.wantMouth, selectedMember.earnedMouth);
-            document.getElementById('detailWantCard').innerHTML = selectedMember.wantCard ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>';
-            document.getElementById('detailOtherWants').textContent = selectedMember.otherWants || '-';
-            document.getElementById('detailNotes').textContent = selectedMember.notes || '-';
-            
-            detailPanel.classList.add('active');
-            renderPlayerFinderTable(); // Re-render to highlight selected row
+            renderPlayerFinderTable();
         }
 
-        // Select member in Gear Tracker and show availability
-        function selectMemberGearTracker(index) {
+        // Toggle expand for Gear Tracker
+        function toggleExpandGear(index) {
             if (currentTab !== 'gear-tracker') return;
             
-            selectedMember = filteredMembers[index];
-            const availabilityPanel = document.getElementById('availabilityPanel');
+            // Toggle selection
+            if (selectedMember && selectedMember.name === filteredMembers[index].name) {
+                selectedMember = null;
+            } else {
+                selectedMember = filteredMembers[index];
+            }
             
-            document.getElementById('availabilityName').textContent = selectedMember.name;
-            
-            // Show availability for each day
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            days.forEach(day => {
-                const isAvailable = selectedMember.availability[day];
-                document.getElementById(`avail${day}`).innerHTML = isAvailable ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>';
-            });
-            
-            availabilityPanel.classList.add('active');
-            renderGearTrackerTable(); // Re-render to highlight selected row
+            renderGearTrackerTable();
         }
 
         // Switch tabs
@@ -969,9 +1062,7 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
             
-            // Hide both detail panels when switching tabs and clear selection
-            document.getElementById('detailPanel').classList.remove('active');
-            document.getElementById('availabilityPanel').classList.remove('active');
+            // Clear selection when switching tabs
             selectedMember = null;
             
             renderTable();
@@ -987,6 +1078,15 @@
             const filterWantEyes = document.getElementById('filterWantEyes').value;
             const filterWantMouth = document.getElementById('filterWantMouth').value;
             const filterWantCard = document.getElementById('filterWantCard').value;
+            
+            // Availability filters
+            const filterMonday = document.getElementById('filterMonday').value;
+            const filterTuesday = document.getElementById('filterTuesday').value;
+            const filterWednesday = document.getElementById('filterWednesday').value;
+            const filterThursday = document.getElementById('filterThursday').value;
+            const filterFriday = document.getElementById('filterFriday').value;
+            const filterSaturday = document.getElementById('filterSaturday').value;
+            const filterSunday = document.getElementById('filterSunday').value;
 
             filteredMembers = allMembers.filter(member => {
                 if (searchTerm) {
@@ -1026,6 +1126,36 @@
                     if (filterWantCard === 'No' && member.wantCard) return false;
                 }
 
+                // Availability filters
+                if (filterMonday) {
+                    if (filterMonday === 'Yes' && !member.availability.Monday) return false;
+                    if (filterMonday === 'No' && member.availability.Monday) return false;
+                }
+                if (filterTuesday) {
+                    if (filterTuesday === 'Yes' && !member.availability.Tuesday) return false;
+                    if (filterTuesday === 'No' && member.availability.Tuesday) return false;
+                }
+                if (filterWednesday) {
+                    if (filterWednesday === 'Yes' && !member.availability.Wednesday) return false;
+                    if (filterWednesday === 'No' && member.availability.Wednesday) return false;
+                }
+                if (filterThursday) {
+                    if (filterThursday === 'Yes' && !member.availability.Thursday) return false;
+                    if (filterThursday === 'No' && member.availability.Thursday) return false;
+                }
+                if (filterFriday) {
+                    if (filterFriday === 'Yes' && !member.availability.Friday) return false;
+                    if (filterFriday === 'No' && member.availability.Friday) return false;
+                }
+                if (filterSaturday) {
+                    if (filterSaturday === 'Yes' && !member.availability.Saturday) return false;
+                    if (filterSaturday === 'No' && member.availability.Saturday) return false;
+                }
+                if (filterSunday) {
+                    if (filterSunday === 'Yes' && !member.availability.Sunday) return false;
+                    if (filterSunday === 'No' && member.availability.Sunday) return false;
+                }
+
                 return true;
             });
 
@@ -1046,12 +1176,19 @@
         document.getElementById('filterWantEyes').addEventListener('change', applyFilters);
         document.getElementById('filterWantMouth').addEventListener('change', applyFilters);
         document.getElementById('filterWantCard').addEventListener('change', applyFilters);
+        document.getElementById('filterMonday').addEventListener('change', applyFilters);
+        document.getElementById('filterTuesday').addEventListener('change', applyFilters);
+        document.getElementById('filterWednesday').addEventListener('change', applyFilters);
+        document.getElementById('filterThursday').addEventListener('change', applyFilters);
+        document.getElementById('filterFriday').addEventListener('change', applyFilters);
+        document.getElementById('filterSaturday').addEventListener('change', applyFilters);
+        document.getElementById('filterSunday').addEventListener('change', applyFilters);
 
         // Make functions globally available
         window.sortMembers = sortMembers;
         window.switchTab = switchTab;
-        window.selectMember = selectMember;
-        window.selectMemberGearTracker = selectMemberGearTracker;
+        window.toggleExpandPlayer = toggleExpandPlayer;
+        window.toggleExpandGear = toggleExpandGear;
 
         // Initialize
         async function init() {
