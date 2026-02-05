@@ -3,488 +3,1479 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trial Illusion Master Rank - Survey Dashboard</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Trial Illusion Guild Manager</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-                sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #4c1d95 50%, #1e293b 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: #a78bfa;
+        }
+
+        .status {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .controls {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #a78bfa;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 8px 12px;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #a78bfa;
+        }
+
+        .filter-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #a78bfa;
+        }
+
+        .checkbox-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .checkbox-filter label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .reset-button {
+            padding: 10px 20px;
+            background: #dc2626;
+            border: none;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 12px;
+        }
+
+        .reset-button:hover {
+            background: #b91c1c;
+        }
+
+        .availability-row {
+            grid-column: 1 / -1;
+            border-top: 1px solid rgba(168, 85, 247, 0.2);
+            padding-top: 16px;
+            margin-top: 4px;
+        }
+
+        .availability-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        /* Tab styles */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #c4b5fd;
+        }
+
+        .tab.active {
+            color: #a78bfa;
+            border-bottom-color: #a78bfa;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .table-container {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+            font-weight: 600;
+            color: #a78bfa;
+            position: sticky;
+            top: 0;
+            background: rgba(30, 41, 59, 0.95);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        th .resizer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            cursor: col-resize;
+            user-select: none;
+            height: 100%;
+            z-index: 1;
+        }
+
+        th .resizer:hover {
+            background: rgba(168, 85, 247, 0.5);
+        }
+
+        th.resizing {
+            border-right: 2px solid #a78bfa;
+        }
+
+        /* Set initial column widths */
+        th[data-column="name"] {
+            width: 180px;
+            min-width: 80px;
+        }
+
+        th[data-column="class"] {
+            width: 120px;
+            min-width: 60px;
+        }
+
+        th[data-column="top20"] {
+            width: 80px;
+            min-width: 40px;
+        }
+
+        th[data-column="rank"] {
+            width: 80px;
+            min-width: 40px;
+        }
+
+        th[data-column="points"] {
+            width: 100px;
+            min-width: 60px;
+        }
+
+        th[data-column="availability"] {
+            width: 60px;
+            min-width: 20px;
+        }
+
+        th[data-column="gear"] {
+            width: 90px;
+            min-width: 50px;
+        }
+
+        th[data-column="wants"] {
+            width: 90px;
+            min-width: 50px;
+        }
+
+        th[data-column="other"] {
+            width: 150px;
+            min-width: 80px;
+        }
+
+        th[data-column="notes"] {
+            width: 150px;
+            min-width: 80px;
+        }
+
+        th:hover {
+            background: rgba(30, 41, 59, 1);
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            opacity: 0.3;
+        }
+
+        th.sort-asc::after {
+            content: ' ↑';
+            opacity: 1;
+        }
+
+        th.sort-desc::after {
+            content: ' ↓';
+            opacity: 1;
+        }
+
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.5);
+        }
+
+        tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        tr:hover {
+            background: rgba(71, 85, 105, 0.3);
+        }
+
+        tr.selected {
+            background: rgba(167, 139, 250, 0.2);
+            border-left: 3px solid #a78bfa;
+        }
+
+        .expand-row {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .expand-row td {
+            padding: 20px;
+        }
+
+        .expand-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .expand-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .expand-label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .expand-value {
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-rank-1 {
+            background: rgba(234, 179, 8, 0.3);
+            color: #fde047;
+        }
+
+        .badge-rank-2 {
+            background: rgba(156, 163, 175, 0.3);
+            color: #d1d5db;
+        }
+
+        .badge-rank-3 {
+            background: rgba(205, 127, 50, 0.3);
+            color: #fdba74;
+        }
+
+        .badge-rank {
+            background: rgba(167, 139, 250, 0.2);
+            color: #c4b5fd;
+        }
+
+        .badge-yes {
+            background: rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+
+        .badge-no {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .badge-top20 {
+            background: rgba(234, 179, 8, 0.4);
+            color: #fde047;
+            font-weight: bold;
+        }
+
+        .badge-obtained {
+            background: rgba(34, 197, 94, 0.4);
+            color: #86efac;
+        }
+
+        .badge-priority {
+            background: rgba(245, 158, 11, 0.4);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.6);
+            font-weight: 700;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .priority-cell {
+            background: rgba(245, 158, 11, 0.15) !important;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .count {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .text-cell {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Player detail panel */
+        .detail-panel {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .detail-panel.active {
+            display: block;
+        }
+
+        .detail-panel h3 {
+            color: #a78bfa;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .availability-check {
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div class="container">
+        <div class="header">
+            <h1>Trial Illusion Guild Manager</h1>
+            <div class="status" id="status">Loading data...</div>
+        </div>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+        <div id="error-container"></div>
 
-        // Lucide React icons as inline SVG components
-        const Users = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-        );
+        <div class="controls">
+            <input 
+                type="text" 
+                id="searchBox" 
+                class="search-box" 
+                placeholder="Search by name..."
+            >
 
-        const Calendar = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-        );
-
-        const Award = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-            </svg>
-        );
-
-        const RefreshCw = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-        );
-
-        const AlertCircle = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        );
-
-        const CheckCircle = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        );
-
-        const Clock = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        );
-
-        const SurveyDashboard = () => {
-          const [responses, setResponses] = useState([]);
-          const [loading, setLoading] = useState(true);
-          const [error, setError] = useState('');
-          const [lastUpdate, setLastUpdate] = useState(null);
-
-          const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7yYEdRoFayPUvpP678ge6jqk2aGdWlUFFAnFlN5eGo3Y3EcpeNSBMAanL_7IqNUe5gwATBaoQ1eAH/pub?output=csv';
-
-          const parseCsvData = (csvText) => {
-            const lines = csvText.split('\n');
-            const dataRows = lines.slice(1).filter(line => line.trim());
-            
-            const parsedData = dataRows.map(line => {
-              const fields = [];
-              let current = '';
-              let inQuotes = false;
-              
-              for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                  inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                  fields.push(current.trim());
-                  current = '';
-                } else {
-                  current += char;
-                }
-              }
-              fields.push(current.trim());
-              
-              return {
-                timestamp: fields[0] || '',
-                name: fields[1] || '',
-                availability: fields[2] || '',
-                hasHeadgear: fields[3] || '',
-                wantsItems: fields[4] || '',
-                notes: fields[5] || ''
-              };
-            }).filter(row => row.name);
-            
-            return parsedData;
-          };
-
-          const fetchData = async () => {
-            setLoading(true);
-            setError('');
-            
-            try {
-              const response = await fetch(CSV_URL);
-              if (!response.ok) throw new Error('Failed to fetch data');
-              
-              const csvText = await response.text();
-              const parsedData = parseCsvData(csvText);
-              
-              setResponses(parsedData);
-              setLastUpdate(new Date());
-              setError('');
-            } catch (err) {
-              console.error('Fetch error:', err);
-              setError('Unable to load data. Make sure the Google Sheet is published to web as CSV.');
-            } finally {
-              setLoading(false);
-            }
-          };
-
-          useEffect(() => {
-            fetchData();
-            
-            // Auto-refresh every 60 seconds
-            const interval = setInterval(fetchData, 60000);
-            return () => clearInterval(interval);
-          }, []);
-
-          const parseAvailability = (availabilityString) => {
-            const days = {
-              Monday: availabilityString.includes('Monday'),
-              Tuesday: availabilityString.includes('Tuesday'),
-              Wednesday: availabilityString.includes('Wednesday'),
-              Thursday: availabilityString.includes('Thursday'),
-              Friday: availabilityString.includes('Friday'),
-              Saturday: availabilityString.includes('Saturday'),
-              Sunday: availabilityString.includes('Sunday')
-            };
-            return days;
-          };
-
-          const getDayStats = () => {
-            const stats = {
-              Monday: 0,
-              Tuesday: 0,
-              Wednesday: 0,
-              Thursday: 0,
-              Friday: 0,
-              Saturday: 0,
-              Sunday: 0
-            };
-
-            responses.forEach(response => {
-              const days = parseAvailability(response.availability);
-              Object.keys(days).forEach(day => {
-                if (days[day]) stats[day]++;
-              });
-            });
-
-            return stats;
-          };
-
-          const categorizeByNeeds = () => {
-            const categories = {
-              needBoth: [],
-              needEyes: [],
-              needMouth: [],
-              hasAll: []
-            };
-
-            responses.forEach(response => {
-              const hasHeadgear = response.hasHeadgear.toLowerCase();
-              const wantsItems = response.wantsItems.toLowerCase();
-              
-              if (hasHeadgear.includes('none')) {
-                if (wantsItems.includes('eyes') && wantsItems.includes('mouth')) {
-                  categories.needBoth.push(response);
-                } else if (wantsItems.includes('eyes')) {
-                  categories.needEyes.push(response);
-                } else if (wantsItems.includes('mouth')) {
-                  categories.needMouth.push(response);
-                }
-              } else if (hasHeadgear.includes('eyes') && !hasHeadgear.includes('mouth')) {
-                if (wantsItems.includes('mouth')) {
-                  categories.needMouth.push(response);
-                }
-              } else if (hasHeadgear.includes('mouth') && !hasHeadgear.includes('eyes')) {
-                if (wantsItems.includes('eyes')) {
-                  categories.needEyes.push(response);
-                }
-              } else if (hasHeadgear.includes('2 slot eyes') && hasHeadgear.includes('2 slot mouth')) {
-                categories.hasAll.push(response);
-              }
-            });
-
-            return categories;
-          };
-
-          const dayStats = getDayStats();
-          const needsCategories = categorizeByNeeds();
-          const totalResponses = responses.length;
-
-          if (loading && responses.length === 0) {
-            return (
-              <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-                <div className="text-white text-xl flex items-center gap-3">
-                  <RefreshCw className="w-6 h-6 animate-spin" />
-                  Loading survey data from Google Sheets...
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-              <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 mb-6 border border-purple-500/30">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h1 className="text-3xl font-bold text-white mb-2">Master Rank Survey Dashboard</h1>
-                      <p className="text-slate-300">Auto-refreshes every 60 seconds</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {lastUpdate && (
-                        <div className="text-slate-400 text-sm flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          Last updated: {lastUpdate.toLocaleTimeString()}
-                        </div>
-                      )}
-                      <button
-                        onClick={fetchData}
-                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center gap-2"
-                        disabled={loading}
-                      >
-                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                        Refresh Now
-                      </button>
-                    </div>
-                  </div>
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Filter by Top 20</label>
+                    <select id="filterTop20">
+                        <option value="">All</option>
+                        <option value="Yes">Top 20</option>
+                        <option value="No">Not Top 20</option>
+                    </select>
                 </div>
 
-                {error && (
-                  <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5" />
-                    {error}
-                  </div>
-                )}
+                <div class="filter-group">
+                    <label>Filter by Rank Range</label>
+                    <select id="filterRank">
+                        <option value="">All Ranks</option>
+                        <option value="1-10">Top 10</option>
+                        <option value="11-50">11-50</option>
+                        <option value="51-100">51-100</option>
+                        <option value="101+">101+</option>
+                        <option value="unranked">Unranked</option>
+                    </select>
+                </div>
 
-                {responses.length === 0 && !loading && (
-                  <div className="bg-yellow-500/20 border border-yellow-500 text-yellow-200 px-4 py-3 rounded-lg mb-4">
-                    No survey responses found. Make sure your Google Sheet is published to web as CSV.
-                  </div>
-                )}
+                <div class="filter-group">
+                    <label>Has 2 Slot Eyes</label>
+                    <select id="filterHasEyes">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
 
-                {responses.length > 0 && (
-                  <>
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <Users className="w-8 h-8 text-purple-400" />
-                          <span className="text-3xl font-bold text-white">{totalResponses}</span>
-                        </div>
-                        <p className="text-slate-300">Total Responses</p>
-                      </div>
-                      
-                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <Award className="w-8 h-8 text-red-400" />
-                          <span className="text-3xl font-bold text-white">{needsCategories.needBoth.length}</span>
-                        </div>
-                        <p className="text-slate-300">Need Both Headgears</p>
-                      </div>
-                      
-                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <Award className="w-8 h-8 text-yellow-400" />
-                          <span className="text-3xl font-bold text-white">
-                            {needsCategories.needEyes.length + needsCategories.needMouth.length}
-                          </span>
-                        </div>
-                        <p className="text-slate-300">Need One Headgear</p>
-                      </div>
-                      
-                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <CheckCircle className="w-8 h-8 text-green-400" />
-                          <span className="text-3xl font-bold text-white">{needsCategories.hasAll.length}</span>
-                        </div>
-                        <p className="text-slate-300">Have Everything</p>
-                      </div>
-                    </div>
+                <div class="filter-group">
+                    <label>Has 2 Slot Mouth</label>
+                    <select id="filterHasMouth">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
 
-                    {/* Availability Matrix */}
-                    <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 mb-6 border border-purple-500/30">
-                      <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                        <Calendar className="w-6 h-6 text-purple-400" />
-                        Daily Availability (8-11 PM)
-                      </h2>
-                      
-                      <div className="grid grid-cols-7 gap-2 mb-4">
-                        {Object.entries(dayStats).map(([day, count]) => {
-                          const percentage = totalResponses > 0 ? (count / totalResponses) * 100 : 0;
-                          return (
-                            <div key={day} className="text-center">
-                              <div className="bg-slate-700 rounded-lg p-4 mb-2">
-                                <div className="text-white font-bold text-xl mb-1">{count}</div>
-                                <div className="text-slate-400 text-xs">{day.slice(0, 3)}</div>
-                              </div>
-                              <div className="w-full bg-slate-700 rounded-full h-2">
-                                <div 
-                                  className="bg-purple-500 h-2 rounded-full transition-all"
-                                  style={{ width: `${percentage}%` }}
-                                ></div>
-                              </div>
-                              <div className="text-slate-400 text-xs mt-1">{Math.round(percentage)}%</div>
+                <div class="filter-group">
+                    <label>Want 2 Slot Eyes</label>
+                    <select id="filterWantEyes">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="Obtained">Obtained</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Want 2 Slot Mouth</label>
+                    <select id="filterWantMouth">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="Obtained">Obtained</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Want Card</label>
+                    <select id="filterWantCard">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+
+                <!-- Availability filters on new line -->
+                <div class="availability-row">
+                    <label style="font-size: 14px; font-weight: 700; color: #a78bfa; margin-bottom: 12px; display: block;">Availability Filters</label>
+                    <div class="availability-filters">
+                        <div class="filter-group">
+                            <div class="checkbox-filter">
+                                <input type="checkbox" id="filterMonday">
+                                <label for="filterMonday">Monday</label>
                             </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Priority Carry List */}
-                    <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 mb-6 border border-purple-500/30">
-                      <h2 className="text-2xl font-bold text-white mb-4">Priority Carry List</h2>
-                      
-                      <div className="space-y-3">
-                        <div>
-                          <h3 className="text-lg font-semibold text-red-400 mb-2">🔴 High Priority (Need Both Headgears)</h3>
-                          {needsCategories.needBoth.length === 0 ? (
-                            <p className="text-slate-400 text-sm">No members need both headgears</p>
-                          ) : (
-                            <div className="space-y-2">
-                              {needsCategories.needBoth.map((member, idx) => (
-                                <div key={idx} className="bg-slate-700/50 rounded-lg p-3">
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <div className="text-white font-semibold">{member.name}</div>
-                                      <div className="text-slate-400 text-sm mt-1">
-                                        Wants: {member.wantsItems}
-                                      </div>
-                                      {member.notes && (
-                                        <div className="text-purple-300 text-sm mt-1 italic">
-                                          Note: {member.notes}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
                         </div>
 
-                        <div>
-                          <h3 className="text-lg font-semibold text-yellow-400 mb-2">🟡 Medium Priority (Need One Headgear)</h3>
-                          {needsCategories.needEyes.length + needsCategories.needMouth.length === 0 ? (
-                            <p className="text-slate-400 text-sm">No members need one headgear</p>
-                          ) : (
-                            <div className="space-y-2">
-                              {[...needsCategories.needEyes, ...needsCategories.needMouth].map((member, idx) => (
-                                <div key={idx} className="bg-slate-700/50 rounded-lg p-3">
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <div className="text-white font-semibold">{member.name}</div>
-                                      <div className="text-slate-400 text-sm mt-1">
-                                        Has: {member.hasHeadgear} | Wants: {member.wantsItems}
-                                      </div>
-                                      {member.notes && (
-                                        <div className="text-purple-300 text-sm mt-1 italic">
-                                          Note: {member.notes}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
+                        <div class="filter-group">
+                            <div class="checkbox-filter">
+                                <input type="checkbox" id="filterTuesday">
+                                <label for="filterTuesday">Tuesday</label>
                             </div>
-                          )}
                         </div>
 
-                        <div>
-                          <h3 className="text-lg font-semibold text-green-400 mb-2">🟢 Flexible/Support (Have Everything)</h3>
-                          {needsCategories.hasAll.length === 0 ? (
-                            <p className="text-slate-400 text-sm">No members have all rewards yet</p>
-                          ) : (
-                            <div className="space-y-2">
-                              {needsCategories.hasAll.map((member, idx) => (
-                                <div key={idx} className="bg-slate-700/50 rounded-lg p-3">
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <div className="text-white font-semibold">{member.name}</div>
-                                      <div className="text-slate-400 text-sm mt-1">
-                                        {member.wantsItems || 'Has everything needed'}
-                                      </div>
-                                      {member.notes && (
-                                        <div className="text-green-300 text-sm mt-1 italic">
-                                          Note: {member.notes}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
+                        <div class="filter-group">
+                            <div class="checkbox-filter">
+                                <input type="checkbox" id="filterWednesday">
+                                <label for="filterWednesday">Wednesday</label>
                             </div>
-                          )}
                         </div>
-                      </div>
-                    </div>
 
-                    {/* Detailed Response Table */}
-                    <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                      <h2 className="text-2xl font-bold text-white mb-4">All Responses</h2>
-                      
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-white text-sm">
-                          <thead>
-                            <tr className="border-b border-purple-500/30">
-                              <th className="text-left py-3 px-2">Name</th>
-                              <th className="text-left py-3 px-2">Mon</th>
-                              <th className="text-left py-3 px-2">Tue</th>
-                              <th className="text-left py-3 px-2">Wed</th>
-                              <th className="text-left py-3 px-2">Thu</th>
-                              <th className="text-left py-3 px-2">Fri</th>
-                              <th className="text-left py-3 px-2">Sat</th>
-                              <th className="text-left py-3 px-2">Sun</th>
-                              <th className="text-left py-3 px-2">Has</th>
-                              <th className="text-left py-3 px-2">Wants</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {responses.map((response, idx) => {
-                              const days = parseAvailability(response.availability);
-                              return (
-                                <tr key={idx} className="border-b border-slate-700/50 hover:bg-slate-700/30">
-                                  <td className="py-3 px-2 font-semibold">{response.name}</td>
-                                  {Object.values(days).map((available, dayIdx) => (
-                                    <td key={dayIdx} className="py-3 px-2 text-center">
-                                      {available ? (
-                                        <span className="text-green-400 text-lg">✓</span>
-                                      ) : (
-                                        <span className="text-slate-600">-</span>
-                                      )}
-                                    </td>
-                                  ))}
-                                  <td className="py-3 px-2 text-xs text-slate-400">
-                                    {response.hasHeadgear.length > 20 
-                                      ? response.hasHeadgear.substring(0, 20) + '...'
-                                      : response.hasHeadgear}
-                                  </td>
-                                  <td className="py-3 px-2 text-xs text-purple-300">
-                                    {response.wantsItems.length > 20
-                                      ? response.wantsItems.substring(0, 20) + '...'
-                                      : response.wantsItems}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
+                        <div class="filter-group">
+                            <div class="checkbox-filter">
+                                <input type="checkbox" id="filterThursday">
+                                <label for="filterThursday">Thursday</label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <div class="checkbox-filter">
+                                <input type="checkbox" id="filterFriday">
+                                <label for="filterFriday">Friday</label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <div class="checkbox-filter">
+                                <input type="checkbox" id="filterSaturday">
+                                <label for="filterSaturday">Saturday</label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <div class="checkbox-filter">
+                                <input type="checkbox" id="filterSunday">
+                                <label for="filterSunday">Sunday</label>
+                            </div>
+                        </div>
                     </div>
-                  </>
-                )}
-              </div>
+                    <button class="reset-button" onclick="resetFilters()">🔄 Reset All Filters</button>
+                </div>
             </div>
-          );
-        };
+        </div>
 
-        ReactDOM.render(<SurveyDashboard />, document.getElementById('root'));
+        <!-- Tabs -->
+        <div class="table-container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('player-finder')">Player Finder</button>
+                <button class="tab" onclick="switchTab('gear-tracker')">Gear Tracker</button>
+                <button class="tab" onclick="switchTab('missing-info')">Missing Info</button>
+            </div>
+
+            <div class="count" id="memberCount">Loading...</div>
+
+            <!-- Player Finder Tab -->
+            <div id="player-finder" class="tab-content active">
+                <div id="playerFinderTable">
+                    <div class="loading">Loading player data...</div>
+                </div>
+            </div>
+
+            <!-- Gear Tracker Tab -->
+            <div id="gear-tracker" class="tab-content">
+                <div id="gearTrackerTable">
+                    <div class="loading">Loading gear data...</div>
+                </div>
+            </div>
+
+            <!-- Missing Info Tab -->
+            <div id="missing-info" class="tab-content">
+                <div id="missingInfoTable">
+                    <div class="loading">Loading missing info...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CSV_URLS = [
+            'https://docs.google.com/spreadsheets/d/e/2PACX-1vS6rkDQvBCcrTfU2vQKKZQYkr-lOkK0KvZNsfEMfAtuGo2HxllJ7gcIAlY6Wp-c-WaiHbAe5atE8M4X/pub?output=csv',
+            'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7yYEdRoFayPUvpP678ge6jqk2aGdWlUFFAnFlN5eGo3Y3EcpeNSBMAanL_7IqNUe5gwATBaoQ1eAH/pub?output=csv'
+        ];
+
+        // Fallback member data
+        const FALLBACK_MEMBER_DATA = [
+            {Name:"Gany",Class:"Creator",top20:"No",stage1Rank:"37",stage1Points:"248506",mouthHeadgear:"No",mask:"Yes",card:"No"},
+            {Name:"Chaz",Class:"Whitesmith",top20:"No",stage1Rank:"43",stage1Points:"225510",mouthHeadgear:"No",mask:"Yes",card:"No"}
+        ];
+
+        // Fallback survey data
+        const FALLBACK_SURVEY_DATA = [
+            {"What is your in-game Name?":"Greydragon","Do you have 2 slot headgear currently?":"2 slot eyes","What items do you want out of TI?":"2 slot mouth","Any more additional notes?":"May the odds be ever in your favor","Monday (8-11 PM)":"Monday (8-11 PM)","Tuesday (8-11 PM)":"Tuesday (8-11 PM)"},
+            {"What is your in-game Name?":"Dr Kirby","Do you have 2 slot headgear currently?":"None of the above","What items do you want out of TI?":"2 slot eyes, 2 slot mouth","Any more additional notes?":"thx for setting this up!","Monday (8-11 PM)":"Monday (8-11 PM)","Wednesday (8-11 PM)":"Wednesday (8-11 PM)"}
+        ];
+
+        let allMembers = [];
+        let filteredMembers = [];
+        let sortColumn = 'wantEyes'; // Default sort by wants
+        let sortDirection = 'desc';
+        let currentTab = 'player-finder';
+        let selectedMember = null;
+
+        // Parse CSV
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+
+            const headers = parseCSVLine(lines[0]);
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length < 2) continue;
+
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                data.push(row);
+            }
+
+            return data;
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        // Merge data
+        function mergeData(memberData, surveyData) {
+            console.log('Sample member data:', memberData[0]); // Debug log
+            
+            const surveyMap = {};
+            surveyData.forEach(row => {
+                const name = row['What is your in-game Name?'];
+                if (name) {
+                    surveyMap[name] = row;
+                }
+            });
+
+            return memberData.map(member => {
+                const memberName = member.Name || member.Members || member.name || member.Member;
+                const survey = surveyMap[memberName] || {};
+                const hasSurvey = !!surveyMap[memberName]; // Check if they submitted survey
+                
+                // Debug log to see member object
+                if (memberData.indexOf(member) === 0) {
+                    console.log('First member object:', member);
+                    console.log('Class value:', member.Class, member.class);
+                }
+                
+                // Parse current gear
+                const currentlyHas = survey['Do you have 2 slot headgear currently?'] || '';
+                const hasEyes = currentlyHas.includes('2 slot eyes') ? 'Yes' : 'No';
+                const hasMouth = currentlyHas.includes('2 slot mouth') ? 'Yes' : 'No';
+                
+                // Parse earned rewards
+                const earnedMouth = (member['Mouth Headgear'] === 'Yes') || (member.mouthHeadgear === 'Yes');
+                const earnedEyes = (member.Mask === 'Yes') || (member.mask === 'Yes');
+                const earnedCard = (member.Card === 'Yes') || (member.card === 'Yes');
+                
+                // Parse wants
+                const wantItems = survey['What items do you want out of TI?'] || '';
+                const wantEyes = wantItems.includes('2 slot eyes');
+                const wantMouth = wantItems.includes('2 slot mouth');
+                const wantCard = wantItems.includes('Card album');
+                
+                // Extract other wants
+                let otherWants = wantItems;
+                otherWants = otherWants.replace(/2 slot eyes/gi, '');
+                otherWants = otherWants.replace(/2 slot mouth/gi, '');
+                otherWants = otherWants.replace(/Card album/gi, '');
+                otherWants = otherWants.replace(/,\s*,/g, ',').replace(/^,\s*|,\s*$/g, '').trim();
+                
+                // Parse availability from comma-separated list
+                const availabilityString = survey['For Stage 2, what days are you available to play?'] || '';
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                const availability = {};
+                days.forEach(day => {
+                    // Check if the day appears in the availability string
+                    availability[day] = availabilityString.includes(`${day} (8-11 PM)`);
+                });
+                
+                return {
+                    name: memberName,
+                    class: member.Class || member.class || '',
+                    top20: member['Top 20 group'] || member.top20 || member.Top20 || member['Top 20'] || member.TOP20 || '',
+                    stage1Rank: member['Stage 1 Rank'] || member.stage1Rank || member.Stage1Rank || member.rank || member.Rank || '',
+                    stage1Points: member['Stage 1 Points'] || member.stage1Points || member.Stage1Points || member.points || member.Points || '',
+                    hasEyes: hasEyes,
+                    hasMouth: hasMouth,
+                    earnedEyes: earnedEyes,
+                    earnedMouth: earnedMouth,
+                    earnedCard: earnedCard,
+                    wantEyes: wantEyes,
+                    wantMouth: wantMouth,
+                    wantCard: wantCard,
+                    otherWants: otherWants,
+                    notes: survey['Any more additional notes?'] || '',
+                    availability: availability,
+                    hasSurvey: hasSurvey
+                };
+            });
+        }
+
+        // Fetch data
+        async function fetchData() {
+            const statusEl = document.getElementById('status');
+            const errorContainer = document.getElementById('error-container');
+            
+            let memberData = [];
+            let surveyData = [];
+            let errors = [];
+
+            try {
+                statusEl.textContent = 'Fetching member data...';
+                const response1 = await fetch(CSV_URLS[0]);
+                if (!response1.ok) throw new Error(`HTTP error! status: ${response1.status}`);
+                const csvText1 = await response1.text();
+                memberData = parseCSV(csvText1);
+            } catch (error) {
+                console.error('Error fetching member data:', error);
+                errors.push(`Member data: ${error.message}`);
+            }
+
+            try {
+                statusEl.textContent = 'Fetching survey data...';
+                const response2 = await fetch(CSV_URLS[1]);
+                if (!response2.ok) throw new Error(`HTTP error! status: ${response2.status}`);
+                const csvText2 = await response2.text();
+                surveyData = parseCSV(csvText2);
+            } catch (error) {
+                console.error('Error fetching survey data:', error);
+                errors.push(`Survey data: ${error.message}`);
+            }
+
+            if (memberData.length === 0 && surveyData.length === 0) {
+                errorContainer.innerHTML = '<div class="error">Failed to load data from URLs. Using fallback data.</div>';
+                statusEl.textContent = 'Using fallback data';
+                memberData = FALLBACK_MEMBER_DATA;
+                surveyData = FALLBACK_SURVEY_DATA;
+            } else if (errors.length > 0) {
+                errorContainer.innerHTML = `<div class="error">Some data failed to load: ${errors.join(', ')}</div>`;
+                statusEl.textContent = 'Partial data loaded';
+            } else {
+                statusEl.textContent = 'Data loaded successfully';
+            }
+
+            return mergeData(memberData, surveyData);
+        }
+
+        // Get rank badge class
+        function getRankBadgeClass(rank) {
+            const r = parseInt(rank);
+            if (isNaN(r) || !rank) return '';
+            if (r === 1) return 'badge-rank-1';
+            if (r >= 2 && r <= 3) return 'badge-rank-2';
+            if (r >= 4 && r <= 10) return 'badge-rank-3';
+            return 'badge-rank';
+        }
+
+        // Format want field
+        function formatWantField(wants, earned, hasItem) {
+            if (!wants) return '<span class="badge badge-no">No</span>';
+            if (earned) {
+                return '<span class="badge badge-obtained">✓ Obtained</span>';
+            }
+            // If they want it but don't have it - PRIORITY
+            if (hasItem === 'No') {
+                return '<span class="badge badge-priority">🎯 NEEDS</span>';
+            }
+            return '<span class="badge badge-yes">Yes</span>';
+        }
+
+        // Default sort (wants priority)
+        function defaultSort() {
+            filteredMembers.sort((a, b) => {
+                // Priority 1: Want Eyes
+                if (a.wantEyes !== b.wantEyes) {
+                    return b.wantEyes ? 1 : -1;
+                }
+                // Priority 2: Want Mouth
+                if (a.wantMouth !== b.wantMouth) {
+                    return b.wantMouth ? 1 : -1;
+                }
+                // Priority 3: Want Card
+                if (a.wantCard !== b.wantCard) {
+                    return b.wantCard ? 1 : -1;
+                }
+                // Priority 4: Rank
+                const aRank = parseInt(a.stage1Rank) || Infinity;
+                const bRank = parseInt(b.stage1Rank) || Infinity;
+                return aRank - bRank;
+            });
+            
+            renderTable();
+        }
+
+        // Sort members
+        function sortMembers(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+
+            filteredMembers.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+
+                // Handle numeric columns
+                if (column === 'stage1Rank' || column === 'stage1Points') {
+                    aVal = parseInt(aVal) || Infinity;
+                    bVal = parseInt(bVal) || Infinity;
+                } else if (typeof aVal === 'boolean') {
+                    aVal = aVal ? 1 : 0;
+                    bVal = bVal ? 1 : 0;
+                } else {
+                    aVal = (aVal || '').toString().toLowerCase();
+                    bVal = (bVal || '').toString().toLowerCase();
+                }
+
+                if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+                if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderTable();
+        }
+
+        // Render Player Finder table
+        function renderPlayerFinderTable() {
+            const container = document.getElementById('playerFinderTable');
+            
+            if (filteredMembers.length === 0) {
+                container.innerHTML = '<div class="loading">No members match the current filters.</div>';
+                return;
+            }
+
+            const getSortClass = (column) => {
+                if (sortColumn === column) {
+                    return sortDirection === 'asc' ? 'sort-asc' : 'sort-desc';
+                }
+                return 'sortable';
+            };
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-column="name" class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th data-column="class" class="${getSortClass('class')}" onclick="sortMembers('class')">Class</th>
+                            <th data-column="top20" class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
+                            <th data-column="rank" class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
+                            <th data-column="points" class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
+                            <th data-column="availability" class="center">Mon</th>
+                            <th data-column="availability" class="center">Tue</th>
+                            <th data-column="availability" class="center">Wed</th>
+                            <th data-column="availability" class="center">Thu</th>
+                            <th data-column="availability" class="center">Fri</th>
+                            <th data-column="availability" class="center">Sat</th>
+                            <th data-column="availability" class="center">Sun</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filteredMembers.forEach((member, index) => {
+                const rankBadgeClass = getRankBadgeClass(member.stage1Rank);
+                const isSelected = selectedMember && selectedMember.name === member.name;
+                
+                html += `
+                    <tr class="${isSelected ? 'selected' : ''}" onclick="toggleExpandPlayer(${index})">
+                        <td><strong>${member.name}</strong></td>
+                        <td>${member.class || '-'}</td>
+                        <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
+                        <td class="center">${member.stage1Rank ? `<span class="badge ${rankBadgeClass}">#${member.stage1Rank}</span>` : '-'}</td>
+                        <td class="center">${member.stage1Points ? parseInt(member.stage1Points).toLocaleString() : '-'}</td>
+                        <td class="center availability-check">${member.availability.Monday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Tuesday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Wednesday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Thursday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Friday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Saturday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Sunday ? '✓' : '-'}</td>
+                    </tr>
+                `;
+                
+                // Add expandable row
+                if (isSelected) {
+                    html += `
+                        <tr class="expand-row">
+                            <td colspan="12">
+                                <div class="expand-content">
+                                    <div class="expand-item">
+                                        <span class="expand-label">Has 2 Slot Eyes</span>
+                                        <span class="expand-value">${member.hasEyes === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Has 2 Slot Mouth</span>
+                                        <span class="expand-value">${member.hasMouth === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Want 2 Slot Eyes</span>
+                                        <span class="expand-value">${formatWantField(member.wantEyes, member.earnedEyes, member.hasEyes)}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Want 2 Slot Mouth</span>
+                                        <span class="expand-value">${formatWantField(member.wantMouth, member.earnedMouth, member.hasMouth)}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Want Card</span>
+                                        <span class="expand-value">${member.wantCard ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Other Wants</span>
+                                        <span class="expand-value">${member.otherWants || '-'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Notes</span>
+                                        <span class="expand-value">${member.notes || '-'}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Render Gear Tracker table
+        function renderGearTrackerTable() {
+            const container = document.getElementById('gearTrackerTable');
+            
+            if (filteredMembers.length === 0) {
+                container.innerHTML = '<div class="loading">No members match the current filters.</div>';
+                return;
+            }
+
+            const getSortClass = (column) => {
+                if (sortColumn === column) {
+                    return sortDirection === 'asc' ? 'sort-asc' : 'sort-desc';
+                }
+                return 'sortable';
+            };
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-column="name" class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th data-column="class" class="${getSortClass('class')}" onclick="sortMembers('class')">Class</th>
+                            <th data-column="top20" class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
+                            <th data-column="rank" class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
+                            <th data-column="points" class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
+                            <th data-column="gear" class="${getSortClass('hasEyes')} center" onclick="sortMembers('hasEyes')">Has Eyes</th>
+                            <th data-column="gear" class="${getSortClass('hasMouth')} center" onclick="sortMembers('hasMouth')">Has Mouth</th>
+                            <th data-column="wants" class="${getSortClass('wantEyes')} center" onclick="sortMembers('wantEyes')">Want Eyes</th>
+                            <th data-column="wants" class="${getSortClass('wantMouth')} center" onclick="sortMembers('wantMouth')">Want Mouth</th>
+                            <th data-column="wants" class="${getSortClass('wantCard')} center" onclick="sortMembers('wantCard')">Want Card</th>
+                            <th data-column="other" class="${getSortClass('otherWants')}" onclick="sortMembers('otherWants')">Other Wants</th>
+                            <th data-column="notes" class="${getSortClass('notes')}" onclick="sortMembers('notes')">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filteredMembers.forEach((member, index) => {
+                const rankBadgeClass = getRankBadgeClass(member.stage1Rank);
+                const isSelected = selectedMember && selectedMember.name === member.name;
+                
+                // Check if they need eyes or mouth (want but don't have)
+                const needsEyes = member.wantEyes && !member.earnedEyes && member.hasEyes === 'No';
+                const needsMouth = member.wantMouth && !member.earnedMouth && member.hasMouth === 'No';
+                
+                html += `
+                    <tr class="${isSelected ? 'selected' : ''}" onclick="toggleExpandGear(${index})">
+                        <td><strong>${member.name}</strong></td>
+                        <td>${member.class || '-'}</td>
+                        <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
+                        <td class="center">${member.stage1Rank ? `<span class="badge ${rankBadgeClass}">#${member.stage1Rank}</span>` : '-'}</td>
+                        <td class="center">${member.stage1Points ? parseInt(member.stage1Points).toLocaleString() : '-'}</td>
+                        <td class="center">${member.hasEyes === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
+                        <td class="center">${member.hasMouth === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
+                        <td class="center ${needsEyes ? 'priority-cell' : ''}">${formatWantField(member.wantEyes, member.earnedEyes, member.hasEyes)}</td>
+                        <td class="center ${needsMouth ? 'priority-cell' : ''}">${formatWantField(member.wantMouth, member.earnedMouth, member.hasMouth)}</td>
+                        <td class="center">${member.wantCard ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
+                        <td class="text-cell" title="${member.otherWants}">${member.otherWants || '-'}</td>
+                        <td class="text-cell" title="${member.notes}">${member.notes || '-'}</td>
+                    </tr>
+                `;
+                
+                // Add expandable row for availability
+                if (isSelected) {
+                    html += `
+                        <tr class="expand-row">
+                            <td colspan="12">
+                                <div class="expand-content">
+                                    <div class="expand-item">
+                                        <span class="expand-label">Monday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Monday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Tuesday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Tuesday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Wednesday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Wednesday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Thursday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Thursday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Friday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Friday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Saturday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Saturday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                    <div class="expand-item">
+                                        <span class="expand-label">Sunday (8-11 PM)</span>
+                                        <span class="expand-value">${member.availability.Sunday ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>'}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Render Missing Info table
+        function renderMissingInfoTable() {
+            const container = document.getElementById('missingInfoTable');
+            
+            // Filter for members who don't have survey data
+            const missingMembers = allMembers.filter(member => !member.hasSurvey);
+            
+            if (missingMembers.length === 0) {
+                container.innerHTML = '<div class="loading" style="color: #86efac;">✓ All members have submitted their information!</div>';
+                return;
+            }
+
+            const getSortClass = (column) => {
+                if (sortColumn === column) {
+                    return sortDirection === 'asc' ? 'sort-asc' : 'sort-desc';
+                }
+                return 'sortable';
+            };
+
+            let html = `
+                <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                    <strong>⚠️ ${missingMembers.length} member${missingMembers.length !== 1 ? 's' : ''} have not submitted survey information yet.</strong>
+                    <br>
+                    <span style="font-size: 14px; opacity: 0.9;">Please remind them to fill out the survey at: <a href="https://forms.gle/xNFi7247meXupH8n6" target="_blank" style="color: #fbbf24; text-decoration: underline;">https://forms.gle/xNFi7247meXupH8n6</a></span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-column="name" class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th data-column="top20" class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
+                            <th class="center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            missingMembers.forEach((member) => {
+                html += `
+                    <tr style="background: rgba(239, 68, 68, 0.1);">
+                        <td><strong>${member.name}</strong></td>
+                        <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
+                        <td class="center"><span class="badge badge-no">⚠️ No Survey</span></td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Render table based on current tab
+        function renderTable() {
+            const memberCount = document.getElementById('memberCount');
+            
+            // Update count based on current tab
+            if (currentTab === 'missing-info') {
+                const missingCount = allMembers.filter(m => !m.hasSurvey).length;
+                memberCount.textContent = `${missingCount} member${missingCount !== 1 ? 's' : ''} missing survey data`;
+            } else {
+                memberCount.textContent = `Showing ${filteredMembers.length} of ${allMembers.length} members`;
+            }
+
+            // Always render all tables so filters work regardless of active tab
+            renderPlayerFinderTable();
+            renderGearTrackerTable();
+            renderMissingInfoTable();
+            
+            // Make columns resizable after rendering
+            setTimeout(() => makeColumnsResizable(), 0);
+        }
+
+        // Toggle expand for Player Finder
+        function toggleExpandPlayer(index) {
+            if (currentTab !== 'player-finder') return;
+            
+            // Toggle selection
+            if (selectedMember && selectedMember.name === filteredMembers[index].name) {
+                selectedMember = null;
+            } else {
+                selectedMember = filteredMembers[index];
+            }
+            
+            renderPlayerFinderTable();
+        }
+
+        // Toggle expand for Gear Tracker
+        function toggleExpandGear(index) {
+            if (currentTab !== 'gear-tracker') return;
+            
+            // Toggle selection
+            if (selectedMember && selectedMember.name === filteredMembers[index].name) {
+                selectedMember = null;
+            } else {
+                selectedMember = filteredMembers[index];
+            }
+            
+            renderGearTrackerTable();
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            
+            // Clear selection when switching tabs
+            selectedMember = null;
+            
+            renderTable();
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const filterTop20 = document.getElementById('filterTop20').value;
+            const filterRank = document.getElementById('filterRank').value;
+            const filterHasEyes = document.getElementById('filterHasEyes').value;
+            const filterHasMouth = document.getElementById('filterHasMouth').value;
+            const filterWantEyes = document.getElementById('filterWantEyes').value;
+            const filterWantMouth = document.getElementById('filterWantMouth').value;
+            const filterWantCard = document.getElementById('filterWantCard').value;
+            
+            // Availability filters (checkboxes)
+            const filterMonday = document.getElementById('filterMonday').checked;
+            const filterTuesday = document.getElementById('filterTuesday').checked;
+            const filterWednesday = document.getElementById('filterWednesday').checked;
+            const filterThursday = document.getElementById('filterThursday').checked;
+            const filterFriday = document.getElementById('filterFriday').checked;
+            const filterSaturday = document.getElementById('filterSaturday').checked;
+            const filterSunday = document.getElementById('filterSunday').checked;
+
+            filteredMembers = allMembers.filter(member => {
+                if (searchTerm) {
+                    const matchesName = member.name.toLowerCase().includes(searchTerm);
+                    if (!matchesName) return false;
+                }
+
+                // Top 20 dropdown filter
+                if (filterTop20) {
+                    if (filterTop20 === 'Yes' && member.top20.toLowerCase() !== 'yes') return false;
+                    if (filterTop20 === 'No' && member.top20.toLowerCase() === 'yes') return false;
+                }
+
+                if (filterRank) {
+                    const rank = parseInt(member.stage1Rank);
+                    if (filterRank === 'unranked' && member.stage1Rank) return false;
+                    if (filterRank === '1-10' && (isNaN(rank) || rank < 1 || rank > 10)) return false;
+                    if (filterRank === '11-50' && (isNaN(rank) || rank < 11 || rank > 50)) return false;
+                    if (filterRank === '51-100' && (isNaN(rank) || rank < 51 || rank > 100)) return false;
+                    if (filterRank === '101+' && (isNaN(rank) || rank < 101)) return false;
+                }
+
+                // Has dropdown filters
+                if (filterHasEyes && member.hasEyes !== filterHasEyes) return false;
+                if (filterHasMouth && member.hasMouth !== filterHasMouth) return false;
+
+                if (filterWantEyes) {
+                    if (filterWantEyes === 'Yes' && (!member.wantEyes || member.earnedEyes)) return false;
+                    if (filterWantEyes === 'Obtained' && !(member.wantEyes && member.earnedEyes)) return false;
+                    if (filterWantEyes === 'No' && member.wantEyes) return false;
+                }
+                if (filterWantMouth) {
+                    if (filterWantMouth === 'Yes' && (!member.wantMouth || member.earnedMouth)) return false;
+                    if (filterWantMouth === 'Obtained' && !(member.wantMouth && member.earnedMouth)) return false;
+                    if (filterWantMouth === 'No' && member.wantMouth) return false;
+                }
+                if (filterWantCard) {
+                    if (filterWantCard === 'Yes' && !member.wantCard) return false;
+                    if (filterWantCard === 'No' && member.wantCard) return false;
+                }
+
+                // Availability checkbox filters (only filter if checked)
+                if (filterMonday && !member.availability.Monday) return false;
+                if (filterTuesday && !member.availability.Tuesday) return false;
+                if (filterWednesday && !member.availability.Wednesday) return false;
+                if (filterThursday && !member.availability.Thursday) return false;
+                if (filterFriday && !member.availability.Friday) return false;
+                if (filterSaturday && !member.availability.Saturday) return false;
+                if (filterSunday && !member.availability.Sunday) return false;
+
+                return true;
+            });
+
+            // Apply default sort (wants priority) when not manually sorted
+            if (sortColumn === 'wantEyes') {
+                defaultSort();
+            } else {
+                sortMembers(sortColumn);
+            }
+        }
+
+        // Reset all filters
+        function resetFilters() {
+            // Reset search box
+            document.getElementById('searchBox').value = '';
+            
+            // Reset dropdown filters
+            document.getElementById('filterTop20').value = '';
+            document.getElementById('filterRank').value = '';
+            document.getElementById('filterHasEyes').value = '';
+            document.getElementById('filterHasMouth').value = '';
+            document.getElementById('filterWantEyes').value = '';
+            document.getElementById('filterWantMouth').value = '';
+            document.getElementById('filterWantCard').value = '';
+            
+            // Reset checkbox filters
+            document.getElementById('filterMonday').checked = false;
+            document.getElementById('filterTuesday').checked = false;
+            document.getElementById('filterWednesday').checked = false;
+            document.getElementById('filterThursday').checked = false;
+            document.getElementById('filterFriday').checked = false;
+            document.getElementById('filterSaturday').checked = false;
+            document.getElementById('filterSunday').checked = false;
+            
+            // Apply filters (which will now show all members)
+            applyFilters();
+        }
+
+        // Event listeners
+        document.getElementById('searchBox').addEventListener('input', applyFilters);
+        document.getElementById('filterTop20').addEventListener('change', applyFilters);
+        document.getElementById('filterRank').addEventListener('change', applyFilters);
+        document.getElementById('filterHasEyes').addEventListener('change', applyFilters);
+        document.getElementById('filterHasMouth').addEventListener('change', applyFilters);
+        document.getElementById('filterWantEyes').addEventListener('change', applyFilters);
+        document.getElementById('filterWantMouth').addEventListener('change', applyFilters);
+        document.getElementById('filterWantCard').addEventListener('change', applyFilters);
+        document.getElementById('filterMonday').addEventListener('change', applyFilters);
+        document.getElementById('filterTuesday').addEventListener('change', applyFilters);
+        document.getElementById('filterWednesday').addEventListener('change', applyFilters);
+        document.getElementById('filterThursday').addEventListener('change', applyFilters);
+        document.getElementById('filterFriday').addEventListener('change', applyFilters);
+        document.getElementById('filterSaturday').addEventListener('change', applyFilters);
+        document.getElementById('filterSunday').addEventListener('change', applyFilters);
+
+        // Make functions globally available
+        window.sortMembers = sortMembers;
+        window.switchTab = switchTab;
+        window.toggleExpandPlayer = toggleExpandPlayer;
+        window.toggleExpandGear = toggleExpandGear;
+        window.resetFilters = resetFilters;
+
+        // Column resize functionality
+        function makeColumnsResizable() {
+            const tables = document.querySelectorAll('table');
+            
+            tables.forEach(table => {
+                const headers = table.querySelectorAll('th');
+                
+                headers.forEach(header => {
+                    // Remove any existing resizer
+                    const existingResizer = header.querySelector('.resizer');
+                    if (existingResizer) {
+                        existingResizer.remove();
+                    }
+                    
+                    // Add resizer element
+                    const resizer = document.createElement('div');
+                    resizer.className = 'resizer';
+                    header.appendChild(resizer);
+                    
+                    let startX, startWidth;
+                    
+                    resizer.addEventListener('mousedown', function(e) {
+                        e.stopPropagation(); // Prevent sorting when resizing
+                        startX = e.pageX;
+                        startWidth = header.offsetWidth;
+                        header.classList.add('resizing');
+                        
+                        document.addEventListener('mousemove', resize);
+                        document.addEventListener('mouseup', stopResize);
+                    });
+                    
+                    function resize(e) {
+                        const width = startWidth + (e.pageX - startX);
+                        const minWidth = parseInt(getComputedStyle(header).minWidth) || 60;
+                        if (width >= minWidth) {
+                            header.style.width = width + 'px';
+                        }
+                    }
+                    
+                    function stopResize() {
+                        header.classList.remove('resizing');
+                        document.removeEventListener('mousemove', resize);
+                        document.removeEventListener('mouseup', stopResize);
+                    }
+                });
+            });
+        }
+
+        // Initialize
+        async function init() {
+            allMembers = await fetchData();
+            filteredMembers = [...allMembers];
+            defaultSort(); // Apply default wants-based sort
+            renderTable();
+            makeColumnsResizable(); // Enable column resizing
+        }
+
+        init();
     </script>
 </body>
 </html>
