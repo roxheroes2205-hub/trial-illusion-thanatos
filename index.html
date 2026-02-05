@@ -655,6 +655,7 @@
             <div class="tabs">
                 <button class="tab active" onclick="switchTab('player-finder')">Player Finder</button>
                 <button class="tab" onclick="switchTab('gear-tracker')">Gear Tracker</button>
+                <button class="tab" onclick="switchTab('missing-info')">Missing Info</button>
             </div>
 
             <div class="count" id="memberCount">Loading...</div>
@@ -670,6 +671,13 @@
             <div id="gear-tracker" class="tab-content">
                 <div id="gearTrackerTable">
                     <div class="loading">Loading gear data...</div>
+                </div>
+            </div>
+
+            <!-- Missing Info Tab -->
+            <div id="missing-info" class="tab-content">
+                <div id="missingInfoTable">
+                    <div class="loading">Loading missing info...</div>
                 </div>
             </div>
         </div>
@@ -764,6 +772,7 @@
             return memberData.map(member => {
                 const memberName = member.Name || member.Members || member.name || member.Member;
                 const survey = surveyMap[memberName] || {};
+                const hasSurvey = !!surveyMap[memberName]; // Check if they submitted survey
                 
                 // Debug log to see member object
                 if (memberData.indexOf(member) === 0) {
@@ -819,7 +828,8 @@
                     wantCard: wantCard,
                     otherWants: otherWants,
                     notes: survey['Any more additional notes?'] || '',
-                    availability: availability
+                    availability: availability,
+                    hasSurvey: hasSurvey
                 };
             });
         }
@@ -1160,14 +1170,72 @@
             container.innerHTML = html;
         }
 
+        // Render Missing Info table
+        function renderMissingInfoTable() {
+            const container = document.getElementById('missingInfoTable');
+            
+            // Filter for members who don't have survey data
+            const missingMembers = allMembers.filter(member => !member.hasSurvey);
+            
+            if (missingMembers.length === 0) {
+                container.innerHTML = '<div class="loading" style="color: #86efac;">✓ All members have submitted their information!</div>';
+                return;
+            }
+
+            const getSortClass = (column) => {
+                if (sortColumn === column) {
+                    return sortDirection === 'asc' ? 'sort-asc' : 'sort-desc';
+                }
+                return 'sortable';
+            };
+
+            let html = `
+                <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                    <strong>⚠️ ${missingMembers.length} member${missingMembers.length !== 1 ? 's' : ''} have not submitted survey information yet.</strong>
+                    <br>
+                    <span style="font-size: 14px; opacity: 0.9;">Please remind them to fill out the survey at: <a href="https://forms.gle/xNFi7247meXupH8n6" target="_blank" style="color: #fbbf24; text-decoration: underline;">https://forms.gle/xNFi7247meXupH8n6</a></span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-column="name" class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th data-column="top20" class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
+                            <th class="center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            missingMembers.forEach((member) => {
+                html += `
+                    <tr style="background: rgba(239, 68, 68, 0.1);">
+                        <td><strong>${member.name}</strong></td>
+                        <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
+                        <td class="center"><span class="badge badge-no">⚠️ No Survey</span></td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
         // Render table based on current tab
         function renderTable() {
             const memberCount = document.getElementById('memberCount');
-            memberCount.textContent = `Showing ${filteredMembers.length} of ${allMembers.length} members`;
+            
+            // Update count based on current tab
+            if (currentTab === 'missing-info') {
+                const missingCount = allMembers.filter(m => !m.hasSurvey).length;
+                memberCount.textContent = `${missingCount} member${missingCount !== 1 ? 's' : ''} missing survey data`;
+            } else {
+                memberCount.textContent = `Showing ${filteredMembers.length} of ${allMembers.length} members`;
+            }
 
-            // Always render both tables so filters work regardless of active tab
+            // Always render all tables so filters work regardless of active tab
             renderPlayerFinderTable();
             renderGearTrackerTable();
+            renderMissingInfoTable();
             
             // Make columns resizable after rendering
             setTimeout(() => makeColumnsResizable(), 0);
