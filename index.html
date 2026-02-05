@@ -427,6 +427,7 @@
             // Debug: Show what columns we have
             if (memberData.length > 0) {
                 console.log('Member data columns:', Object.keys(memberData[0]));
+                console.log('First member object:', memberData[0]);
             }
             if (surveyData.length > 0) {
                 console.log('Survey data columns:', Object.keys(surveyData[0]));
@@ -450,9 +451,9 @@
                 const hasMouth = currentlyHas.includes('2 slot mouth') ? 'Yes' : 'No';
                 
                 // Parse what they EARNED from Stage 2 (from member CSV)
-                const earnedMouth = member.mouthHeadgear === 'Yes';
-                const earnedEyes = member.mask === 'Yes';
-                const earnedCard = member.card === 'Yes';
+                const earnedMouth = (member['Mouth Headgear'] === 'Yes') || (member.mouthHeadgear === 'Yes');
+                const earnedEyes = (member.Mask === 'Yes') || (member.mask === 'Yes');
+                const earnedCard = (member.Card === 'Yes') || (member.card === 'Yes');
                 
                 // Parse what they want from survey
                 const wantItems = survey['What items do you want out of TI?'] || '';
@@ -469,9 +470,9 @@
                 
                 return {
                     name: memberName,
-                    top20: member.top20 || '',
-                    stage1Rank: member.stage1Rank || '',
-                    stage1Points: member.stage1Points || '',
+                    top20: member['Top 20 group'] || member.top20 || member.Top20 || member['Top 20'] || member.TOP20 || '',
+                    stage1Rank: member['Stage 1 Rank'] || member.stage1Rank || member.Stage1Rank || member.rank || member.Rank || '',
+                    stage1Points: member['Stage 1 Points'] || member.stage1Points || member.Stage1Points || member.points || member.Points || '',
                     hasEyes: hasEyes,
                     hasMouth: hasMouth,
                     earnedEyes: earnedEyes,
