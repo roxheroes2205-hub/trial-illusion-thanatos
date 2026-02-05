@@ -407,6 +407,27 @@
             color: #86efac;
         }
 
+        .badge-priority {
+            background: rgba(245, 158, 11, 0.4);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.6);
+            font-weight: 700;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .priority-cell {
+            background: rgba(245, 158, 11, 0.15) !important;
+        }
+
         .loading {
             text-align: center;
             padding: 40px;
@@ -860,10 +881,14 @@
         }
 
         // Format want field
-        function formatWantField(wants, earned) {
+        function formatWantField(wants, earned, hasItem) {
             if (!wants) return '<span class="badge badge-no">No</span>';
             if (earned) {
-                return '<span class="badge badge-obtained">(Obtained)</span>';
+                return '<span class="badge badge-obtained">✓ Obtained</span>';
+            }
+            // If they want it but don't have it - PRIORITY
+            if (hasItem === 'No') {
+                return '<span class="badge badge-priority">🎯 NEEDS</span>';
             }
             return '<span class="badge badge-yes">Yes</span>';
         }
@@ -999,11 +1024,11 @@
                                     </div>
                                     <div class="expand-item">
                                         <span class="expand-label">Want 2 Slot Eyes</span>
-                                        <span class="expand-value">${formatWantField(member.wantEyes, member.earnedEyes)}</span>
+                                        <span class="expand-value">${formatWantField(member.wantEyes, member.earnedEyes, member.hasEyes)}</span>
                                     </div>
                                     <div class="expand-item">
                                         <span class="expand-label">Want 2 Slot Mouth</span>
-                                        <span class="expand-value">${formatWantField(member.wantMouth, member.earnedMouth)}</span>
+                                        <span class="expand-value">${formatWantField(member.wantMouth, member.earnedMouth, member.hasMouth)}</span>
                                     </div>
                                     <div class="expand-item">
                                         <span class="expand-label">Want Card</span>
@@ -1069,6 +1094,10 @@
                 const rankBadgeClass = getRankBadgeClass(member.stage1Rank);
                 const isSelected = selectedMember && selectedMember.name === member.name;
                 
+                // Check if they need eyes or mouth (want but don't have)
+                const needsEyes = member.wantEyes && !member.earnedEyes && member.hasEyes === 'No';
+                const needsMouth = member.wantMouth && !member.earnedMouth && member.hasMouth === 'No';
+                
                 html += `
                     <tr class="${isSelected ? 'selected' : ''}" onclick="toggleExpandGear(${index})">
                         <td><strong>${member.name}</strong></td>
@@ -1078,8 +1107,8 @@
                         <td class="center">${member.stage1Points ? parseInt(member.stage1Points).toLocaleString() : '-'}</td>
                         <td class="center">${member.hasEyes === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
                         <td class="center">${member.hasMouth === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
-                        <td class="center">${formatWantField(member.wantEyes, member.earnedEyes)}</td>
-                        <td class="center">${formatWantField(member.wantMouth, member.earnedMouth)}</td>
+                        <td class="center ${needsEyes ? 'priority-cell' : ''}">${formatWantField(member.wantEyes, member.earnedEyes, member.hasEyes)}</td>
+                        <td class="center ${needsMouth ? 'priority-cell' : ''}">${formatWantField(member.wantMouth, member.earnedMouth, member.hasMouth)}</td>
                         <td class="center">${member.wantCard ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
                         <td class="text-cell" title="${member.otherWants}">${member.otherWants || '-'}</td>
                         <td class="text-cell" title="${member.notes}">${member.notes || '-'}</td>
