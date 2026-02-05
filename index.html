@@ -424,6 +424,14 @@
 
         // Merge data from both CSV sources
         function mergeData(memberData, surveyData) {
+            // Debug: Show what columns we have
+            if (memberData.length > 0) {
+                console.log('Member data columns:', Object.keys(memberData[0]));
+            }
+            if (surveyData.length > 0) {
+                console.log('Survey data columns:', Object.keys(surveyData[0]));
+            }
+            
             const surveyMap = {};
             surveyData.forEach(row => {
                 const name = row['What is your in-game Name?'];
@@ -433,7 +441,7 @@
             });
 
             return memberData.map(member => {
-                const memberName = member.Members || member.name;
+                const memberName = member.Members || member.Name || member.name || member.Member;
                 const survey = surveyMap[memberName] || {};
                 
                 // Parse what they currently have BEFORE Stage 2 (from survey)
