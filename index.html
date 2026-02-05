@@ -212,6 +212,77 @@
             white-space: nowrap;
             cursor: pointer;
             user-select: none;
+            position: relative;
+        }
+
+        th .resizer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            cursor: col-resize;
+            user-select: none;
+            height: 100%;
+            z-index: 1;
+        }
+
+        th .resizer:hover {
+            background: rgba(168, 85, 247, 0.5);
+        }
+
+        th.resizing {
+            border-right: 2px solid #a78bfa;
+        }
+
+        /* Set initial column widths */
+        th[data-column="name"] {
+            width: 180px;
+            min-width: 80px;
+        }
+
+        th[data-column="class"] {
+            width: 120px;
+            min-width: 60px;
+        }
+
+        th[data-column="top20"] {
+            width: 80px;
+            min-width: 40px;
+        }
+
+        th[data-column="rank"] {
+            width: 80px;
+            min-width: 40px;
+        }
+
+        th[data-column="points"] {
+            width: 100px;
+            min-width: 60px;
+        }
+
+        th[data-column="availability"] {
+            width: 60px;
+            min-width: 20px;
+        }
+
+        th[data-column="gear"] {
+            width: 90px;
+            min-width: 50px;
+        }
+
+        th[data-column="wants"] {
+            width: 90px;
+            min-width: 50px;
+        }
+
+        th[data-column="other"] {
+            width: 150px;
+            min-width: 80px;
+        }
+
+        th[data-column="notes"] {
+            width: 150px;
+            min-width: 80px;
         }
 
         th:hover {
@@ -874,18 +945,18 @@
                 <table>
                     <thead>
                         <tr>
-                            <th class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
-                            <th class="${getSortClass('class')}" onclick="sortMembers('class')">Class</th>
-                            <th class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
-                            <th class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
-                            <th class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
-                            <th class="center">Mon</th>
-                            <th class="center">Tue</th>
-                            <th class="center">Wed</th>
-                            <th class="center">Thu</th>
-                            <th class="center">Fri</th>
-                            <th class="center">Sat</th>
-                            <th class="center">Sun</th>
+                            <th data-column="name" class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th data-column="class" class="${getSortClass('class')}" onclick="sortMembers('class')">Class</th>
+                            <th data-column="top20" class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
+                            <th data-column="rank" class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
+                            <th data-column="points" class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
+                            <th data-column="availability" class="center">Mon</th>
+                            <th data-column="availability" class="center">Tue</th>
+                            <th data-column="availability" class="center">Wed</th>
+                            <th data-column="availability" class="center">Thu</th>
+                            <th data-column="availability" class="center">Fri</th>
+                            <th data-column="availability" class="center">Sat</th>
+                            <th data-column="availability" class="center">Sun</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -977,18 +1048,18 @@
                 <table>
                     <thead>
                         <tr>
-                            <th class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
-                            <th class="${getSortClass('class')}" onclick="sortMembers('class')">Class</th>
-                            <th class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
-                            <th class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
-                            <th class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
-                            <th class="${getSortClass('hasEyes')} center" onclick="sortMembers('hasEyes')">Has Eyes</th>
-                            <th class="${getSortClass('hasMouth')} center" onclick="sortMembers('hasMouth')">Has Mouth</th>
-                            <th class="${getSortClass('wantEyes')} center" onclick="sortMembers('wantEyes')">Want Eyes</th>
-                            <th class="${getSortClass('wantMouth')} center" onclick="sortMembers('wantMouth')">Want Mouth</th>
-                            <th class="${getSortClass('wantCard')} center" onclick="sortMembers('wantCard')">Want Card</th>
-                            <th class="${getSortClass('otherWants')}" onclick="sortMembers('otherWants')">Other Wants</th>
-                            <th class="${getSortClass('notes')}" onclick="sortMembers('notes')">Notes</th>
+                            <th data-column="name" class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th data-column="class" class="${getSortClass('class')}" onclick="sortMembers('class')">Class</th>
+                            <th data-column="top20" class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
+                            <th data-column="rank" class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
+                            <th data-column="points" class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
+                            <th data-column="gear" class="${getSortClass('hasEyes')} center" onclick="sortMembers('hasEyes')">Has Eyes</th>
+                            <th data-column="gear" class="${getSortClass('hasMouth')} center" onclick="sortMembers('hasMouth')">Has Mouth</th>
+                            <th data-column="wants" class="${getSortClass('wantEyes')} center" onclick="sortMembers('wantEyes')">Want Eyes</th>
+                            <th data-column="wants" class="${getSortClass('wantMouth')} center" onclick="sortMembers('wantMouth')">Want Mouth</th>
+                            <th data-column="wants" class="${getSortClass('wantCard')} center" onclick="sortMembers('wantCard')">Want Card</th>
+                            <th data-column="other" class="${getSortClass('otherWants')}" onclick="sortMembers('otherWants')">Other Wants</th>
+                            <th data-column="notes" class="${getSortClass('notes')}" onclick="sortMembers('notes')">Notes</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1068,6 +1139,9 @@
             // Always render both tables so filters work regardless of active tab
             renderPlayerFinderTable();
             renderGearTrackerTable();
+            
+            // Make columns resizable after rendering
+            setTimeout(() => makeColumnsResizable(), 0);
         }
 
         // Toggle expand for Player Finder
@@ -1247,12 +1321,61 @@
         window.toggleExpandGear = toggleExpandGear;
         window.resetFilters = resetFilters;
 
+        // Column resize functionality
+        function makeColumnsResizable() {
+            const tables = document.querySelectorAll('table');
+            
+            tables.forEach(table => {
+                const headers = table.querySelectorAll('th');
+                
+                headers.forEach(header => {
+                    // Remove any existing resizer
+                    const existingResizer = header.querySelector('.resizer');
+                    if (existingResizer) {
+                        existingResizer.remove();
+                    }
+                    
+                    // Add resizer element
+                    const resizer = document.createElement('div');
+                    resizer.className = 'resizer';
+                    header.appendChild(resizer);
+                    
+                    let startX, startWidth;
+                    
+                    resizer.addEventListener('mousedown', function(e) {
+                        e.stopPropagation(); // Prevent sorting when resizing
+                        startX = e.pageX;
+                        startWidth = header.offsetWidth;
+                        header.classList.add('resizing');
+                        
+                        document.addEventListener('mousemove', resize);
+                        document.addEventListener('mouseup', stopResize);
+                    });
+                    
+                    function resize(e) {
+                        const width = startWidth + (e.pageX - startX);
+                        const minWidth = parseInt(getComputedStyle(header).minWidth) || 60;
+                        if (width >= minWidth) {
+                            header.style.width = width + 'px';
+                        }
+                    }
+                    
+                    function stopResize() {
+                        header.classList.remove('resizing');
+                        document.removeEventListener('mousemove', resize);
+                        document.removeEventListener('mouseup', stopResize);
+                    }
+                });
+            });
+        }
+
         // Initialize
         async function init() {
             allMembers = await fetchData();
             filteredMembers = [...allMembers];
             defaultSort(); // Apply default wants-based sort
             renderTable();
+            makeColumnsResizable(); // Enable column resizing
         }
 
         init();
