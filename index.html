@@ -3,488 +3,725 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trial Illusion Master Rank - Survey Dashboard</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Trial Illusion Guild Manager</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-                sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #4c1d95 50%, #1e293b 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: #a78bfa;
+        }
+
+        .status {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .controls {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #a78bfa;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 8px 12px;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #a78bfa;
+        }
+
+        .table-container {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+            font-weight: 600;
+            color: #a78bfa;
+            position: sticky;
+            top: 0;
+            background: rgba(30, 41, 59, 0.95);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background: rgba(30, 41, 59, 1);
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            opacity: 0.3;
+        }
+
+        th.sort-asc::after {
+            content: ' ↑';
+            opacity: 1;
+        }
+
+        th.sort-desc::after {
+            content: ' ↓';
+            opacity: 1;
+        }
+
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.5);
+        }
+
+        tr:hover {
+            background: rgba(71, 85, 105, 0.3);
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-rank-1 {
+            background: rgba(234, 179, 8, 0.3);
+            color: #fde047;
+        }
+
+        .badge-rank-2 {
+            background: rgba(156, 163, 175, 0.3);
+            color: #d1d5db;
+        }
+
+        .badge-rank-3 {
+            background: rgba(205, 127, 50, 0.3);
+            color: #fdba74;
+        }
+
+        .badge-rank {
+            background: rgba(167, 139, 250, 0.2);
+            color: #c4b5fd;
+        }
+
+        .badge-yes {
+            background: rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+
+        .badge-no {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .badge-top20 {
+            background: rgba(234, 179, 8, 0.4);
+            color: #fde047;
+            font-weight: bold;
+        }
+
+        .badge-obtained {
+            background: rgba(34, 197, 94, 0.4);
+            color: #86efac;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .count {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .text-cell {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div class="container">
+        <div class="header">
+            <h1>Trial Illusion Guild Manager</h1>
+            <div class="status" id="status">Loading data...</div>
+        </div>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+        <div id="error-container"></div>
 
-        // Lucide React icons as inline SVG components
-        const Users = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-        );
+        <div class="controls">
+            <input 
+                type="text" 
+                id="searchBox" 
+                class="search-box" 
+                placeholder="Search by name..."
+            >
 
-        const Calendar = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-        );
-
-        const Award = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-            </svg>
-        );
-
-        const RefreshCw = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-        );
-
-        const AlertCircle = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        );
-
-        const CheckCircle = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        );
-
-        const Clock = ({ className }) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        );
-
-        const SurveyDashboard = () => {
-          const [responses, setResponses] = useState([]);
-          const [loading, setLoading] = useState(true);
-          const [error, setError] = useState('');
-          const [lastUpdate, setLastUpdate] = useState(null);
-
-          const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7yYEdRoFayPUvpP678ge6jqk2aGdWlUFFAnFlN5eGo3Y3EcpeNSBMAanL_7IqNUe5gwATBaoQ1eAH/pub?output=csv';
-
-          const parseCsvData = (csvText) => {
-            const lines = csvText.split('\n');
-            const dataRows = lines.slice(1).filter(line => line.trim());
-            
-            const parsedData = dataRows.map(line => {
-              const fields = [];
-              let current = '';
-              let inQuotes = false;
-              
-              for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                  inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                  fields.push(current.trim());
-                  current = '';
-                } else {
-                  current += char;
-                }
-              }
-              fields.push(current.trim());
-              
-              return {
-                timestamp: fields[0] || '',
-                name: fields[1] || '',
-                availability: fields[2] || '',
-                hasHeadgear: fields[3] || '',
-                wantsItems: fields[4] || '',
-                notes: fields[5] || ''
-              };
-            }).filter(row => row.name);
-            
-            return parsedData;
-          };
-
-          const fetchData = async () => {
-            setLoading(true);
-            setError('');
-            
-            try {
-              const response = await fetch(CSV_URL);
-              if (!response.ok) throw new Error('Failed to fetch data');
-              
-              const csvText = await response.text();
-              const parsedData = parseCsvData(csvText);
-              
-              setResponses(parsedData);
-              setLastUpdate(new Date());
-              setError('');
-            } catch (err) {
-              console.error('Fetch error:', err);
-              setError('Unable to load data. Make sure the Google Sheet is published to web as CSV.');
-            } finally {
-              setLoading(false);
-            }
-          };
-
-          useEffect(() => {
-            fetchData();
-            
-            // Auto-refresh every 60 seconds
-            const interval = setInterval(fetchData, 60000);
-            return () => clearInterval(interval);
-          }, []);
-
-          const parseAvailability = (availabilityString) => {
-            const days = {
-              Monday: availabilityString.includes('Monday'),
-              Tuesday: availabilityString.includes('Tuesday'),
-              Wednesday: availabilityString.includes('Wednesday'),
-              Thursday: availabilityString.includes('Thursday'),
-              Friday: availabilityString.includes('Friday'),
-              Saturday: availabilityString.includes('Saturday'),
-              Sunday: availabilityString.includes('Sunday')
-            };
-            return days;
-          };
-
-          const getDayStats = () => {
-            const stats = {
-              Monday: 0,
-              Tuesday: 0,
-              Wednesday: 0,
-              Thursday: 0,
-              Friday: 0,
-              Saturday: 0,
-              Sunday: 0
-            };
-
-            responses.forEach(response => {
-              const days = parseAvailability(response.availability);
-              Object.keys(days).forEach(day => {
-                if (days[day]) stats[day]++;
-              });
-            });
-
-            return stats;
-          };
-
-          const categorizeByNeeds = () => {
-            const categories = {
-              needBoth: [],
-              needEyes: [],
-              needMouth: [],
-              hasAll: []
-            };
-
-            responses.forEach(response => {
-              const hasHeadgear = response.hasHeadgear.toLowerCase();
-              const wantsItems = response.wantsItems.toLowerCase();
-              
-              if (hasHeadgear.includes('none')) {
-                if (wantsItems.includes('eyes') && wantsItems.includes('mouth')) {
-                  categories.needBoth.push(response);
-                } else if (wantsItems.includes('eyes')) {
-                  categories.needEyes.push(response);
-                } else if (wantsItems.includes('mouth')) {
-                  categories.needMouth.push(response);
-                }
-              } else if (hasHeadgear.includes('eyes') && !hasHeadgear.includes('mouth')) {
-                if (wantsItems.includes('mouth')) {
-                  categories.needMouth.push(response);
-                }
-              } else if (hasHeadgear.includes('mouth') && !hasHeadgear.includes('eyes')) {
-                if (wantsItems.includes('eyes')) {
-                  categories.needEyes.push(response);
-                }
-              } else if (hasHeadgear.includes('2 slot eyes') && hasHeadgear.includes('2 slot mouth')) {
-                categories.hasAll.push(response);
-              }
-            });
-
-            return categories;
-          };
-
-          const dayStats = getDayStats();
-          const needsCategories = categorizeByNeeds();
-          const totalResponses = responses.length;
-
-          if (loading && responses.length === 0) {
-            return (
-              <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-                <div className="text-white text-xl flex items-center gap-3">
-                  <RefreshCw className="w-6 h-6 animate-spin" />
-                  Loading survey data from Google Sheets...
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-              <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 mb-6 border border-purple-500/30">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h1 className="text-3xl font-bold text-white mb-2">Master Rank Survey Dashboard</h1>
-                      <p className="text-slate-300">Auto-refreshes every 60 seconds</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {lastUpdate && (
-                        <div className="text-slate-400 text-sm flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          Last updated: {lastUpdate.toLocaleTimeString()}
-                        </div>
-                      )}
-                      <button
-                        onClick={fetchData}
-                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center gap-2"
-                        disabled={loading}
-                      >
-                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                        Refresh Now
-                      </button>
-                    </div>
-                  </div>
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Filter by Top 20</label>
+                    <select id="filterTop20">
+                        <option value="">All</option>
+                        <option value="Yes">Top 20</option>
+                        <option value="No">Not Top 20</option>
+                    </select>
                 </div>
 
-                {error && (
-                  <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5" />
-                    {error}
-                  </div>
-                )}
+                <div class="filter-group">
+                    <label>Filter by Rank Range</label>
+                    <select id="filterRank">
+                        <option value="">All Ranks</option>
+                        <option value="1-10">Top 10</option>
+                        <option value="11-50">11-50</option>
+                        <option value="51-100">51-100</option>
+                        <option value="101+">101+</option>
+                        <option value="unranked">Unranked</option>
+                    </select>
+                </div>
 
-                {responses.length === 0 && !loading && (
-                  <div className="bg-yellow-500/20 border border-yellow-500 text-yellow-200 px-4 py-3 rounded-lg mb-4">
-                    No survey responses found. Make sure your Google Sheet is published to web as CSV.
-                  </div>
-                )}
+                <div class="filter-group">
+                    <label>Has 2 Slot Eyes</label>
+                    <select id="filterHasEyes">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
 
-                {responses.length > 0 && (
-                  <>
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <Users className="w-8 h-8 text-purple-400" />
-                          <span className="text-3xl font-bold text-white">{totalResponses}</span>
-                        </div>
-                        <p className="text-slate-300">Total Responses</p>
-                      </div>
-                      
-                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <Award className="w-8 h-8 text-red-400" />
-                          <span className="text-3xl font-bold text-white">{needsCategories.needBoth.length}</span>
-                        </div>
-                        <p className="text-slate-300">Need Both Headgears</p>
-                      </div>
-                      
-                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <Award className="w-8 h-8 text-yellow-400" />
-                          <span className="text-3xl font-bold text-white">
-                            {needsCategories.needEyes.length + needsCategories.needMouth.length}
-                          </span>
-                        </div>
-                        <p className="text-slate-300">Need One Headgear</p>
-                      </div>
-                      
-                      <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <CheckCircle className="w-8 h-8 text-green-400" />
-                          <span className="text-3xl font-bold text-white">{needsCategories.hasAll.length}</span>
-                        </div>
-                        <p className="text-slate-300">Have Everything</p>
-                      </div>
-                    </div>
+                <div class="filter-group">
+                    <label>Has 2 Slot Mouth</label>
+                    <select id="filterHasMouth">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
 
-                    {/* Availability Matrix */}
-                    <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 mb-6 border border-purple-500/30">
-                      <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                        <Calendar className="w-6 h-6 text-purple-400" />
-                        Daily Availability (8-11 PM)
-                      </h2>
-                      
-                      <div className="grid grid-cols-7 gap-2 mb-4">
-                        {Object.entries(dayStats).map(([day, count]) => {
-                          const percentage = totalResponses > 0 ? (count / totalResponses) * 100 : 0;
-                          return (
-                            <div key={day} className="text-center">
-                              <div className="bg-slate-700 rounded-lg p-4 mb-2">
-                                <div className="text-white font-bold text-xl mb-1">{count}</div>
-                                <div className="text-slate-400 text-xs">{day.slice(0, 3)}</div>
-                              </div>
-                              <div className="w-full bg-slate-700 rounded-full h-2">
-                                <div 
-                                  className="bg-purple-500 h-2 rounded-full transition-all"
-                                  style={{ width: `${percentage}%` }}
-                                ></div>
-                              </div>
-                              <div className="text-slate-400 text-xs mt-1">{Math.round(percentage)}%</div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+                <div class="filter-group">
+                    <label>Want 2 Slot Eyes</label>
+                    <select id="filterWantEyes">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="Obtained">Obtained</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
 
-                    {/* Priority Carry List */}
-                    <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 mb-6 border border-purple-500/30">
-                      <h2 className="text-2xl font-bold text-white mb-4">Priority Carry List</h2>
-                      
-                      <div className="space-y-3">
-                        <div>
-                          <h3 className="text-lg font-semibold text-red-400 mb-2">🔴 High Priority (Need Both Headgears)</h3>
-                          {needsCategories.needBoth.length === 0 ? (
-                            <p className="text-slate-400 text-sm">No members need both headgears</p>
-                          ) : (
-                            <div className="space-y-2">
-                              {needsCategories.needBoth.map((member, idx) => (
-                                <div key={idx} className="bg-slate-700/50 rounded-lg p-3">
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <div className="text-white font-semibold">{member.name}</div>
-                                      <div className="text-slate-400 text-sm mt-1">
-                                        Wants: {member.wantsItems}
-                                      </div>
-                                      {member.notes && (
-                                        <div className="text-purple-300 text-sm mt-1 italic">
-                                          Note: {member.notes}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                <div class="filter-group">
+                    <label>Want 2 Slot Mouth</label>
+                    <select id="filterWantMouth">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="Obtained">Obtained</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
 
-                        <div>
-                          <h3 className="text-lg font-semibold text-yellow-400 mb-2">🟡 Medium Priority (Need One Headgear)</h3>
-                          {needsCategories.needEyes.length + needsCategories.needMouth.length === 0 ? (
-                            <p className="text-slate-400 text-sm">No members need one headgear</p>
-                          ) : (
-                            <div className="space-y-2">
-                              {[...needsCategories.needEyes, ...needsCategories.needMouth].map((member, idx) => (
-                                <div key={idx} className="bg-slate-700/50 rounded-lg p-3">
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <div className="text-white font-semibold">{member.name}</div>
-                                      <div className="text-slate-400 text-sm mt-1">
-                                        Has: {member.hasHeadgear} | Wants: {member.wantsItems}
-                                      </div>
-                                      {member.notes && (
-                                        <div className="text-purple-300 text-sm mt-1 italic">
-                                          Note: {member.notes}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        <div>
-                          <h3 className="text-lg font-semibold text-green-400 mb-2">🟢 Flexible/Support (Have Everything)</h3>
-                          {needsCategories.hasAll.length === 0 ? (
-                            <p className="text-slate-400 text-sm">No members have all rewards yet</p>
-                          ) : (
-                            <div className="space-y-2">
-                              {needsCategories.hasAll.map((member, idx) => (
-                                <div key={idx} className="bg-slate-700/50 rounded-lg p-3">
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <div className="text-white font-semibold">{member.name}</div>
-                                      <div className="text-slate-400 text-sm mt-1">
-                                        {member.wantsItems || 'Has everything needed'}
-                                      </div>
-                                      {member.notes && (
-                                        <div className="text-green-300 text-sm mt-1 italic">
-                                          Note: {member.notes}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Detailed Response Table */}
-                    <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-purple-500/30">
-                      <h2 className="text-2xl font-bold text-white mb-4">All Responses</h2>
-                      
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-white text-sm">
-                          <thead>
-                            <tr className="border-b border-purple-500/30">
-                              <th className="text-left py-3 px-2">Name</th>
-                              <th className="text-left py-3 px-2">Mon</th>
-                              <th className="text-left py-3 px-2">Tue</th>
-                              <th className="text-left py-3 px-2">Wed</th>
-                              <th className="text-left py-3 px-2">Thu</th>
-                              <th className="text-left py-3 px-2">Fri</th>
-                              <th className="text-left py-3 px-2">Sat</th>
-                              <th className="text-left py-3 px-2">Sun</th>
-                              <th className="text-left py-3 px-2">Has</th>
-                              <th className="text-left py-3 px-2">Wants</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {responses.map((response, idx) => {
-                              const days = parseAvailability(response.availability);
-                              return (
-                                <tr key={idx} className="border-b border-slate-700/50 hover:bg-slate-700/30">
-                                  <td className="py-3 px-2 font-semibold">{response.name}</td>
-                                  {Object.values(days).map((available, dayIdx) => (
-                                    <td key={dayIdx} className="py-3 px-2 text-center">
-                                      {available ? (
-                                        <span className="text-green-400 text-lg">✓</span>
-                                      ) : (
-                                        <span className="text-slate-600">-</span>
-                                      )}
-                                    </td>
-                                  ))}
-                                  <td className="py-3 px-2 text-xs text-slate-400">
-                                    {response.hasHeadgear.length > 20 
-                                      ? response.hasHeadgear.substring(0, 20) + '...'
-                                      : response.hasHeadgear}
-                                  </td>
-                                  <td className="py-3 px-2 text-xs text-purple-300">
-                                    {response.wantsItems.length > 20
-                                      ? response.wantsItems.substring(0, 20) + '...'
-                                      : response.wantsItems}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
+                <div class="filter-group">
+                    <label>Want Card</label>
+                    <select id="filterWantCard">
+                        <option value="">All</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
             </div>
-          );
-        };
+        </div>
 
-        ReactDOM.render(<SurveyDashboard />, document.getElementById('root'));
+        <div class="table-container">
+            <div class="count" id="memberCount">Loading...</div>
+            <div id="tableContent">
+                <div class="loading">Loading guild members...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CSV_URLS = [
+            'https://docs.google.com/spreadsheets/d/e/2PACX-1vS6rkDQvBCcrTfU2vQKKZQYkr-lOkK0KvZNsfEMfAtuGo2HxllJ7gcIAlY6Wp-c-WaiHbAe5atE8M4X/pub?output=csv',
+            'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7yYEdRoFayPUvpP678ge6jqk2aGdWlUFFAnFlN5eGo3Y3EcpeNSBMAanL_7IqNUe5gwATBaoQ1eAH/pub?output=csv'
+        ];
+
+        // Fallback member data (from first CSV) - includes Stage 2 rewards
+        const FALLBACK_MEMBER_DATA = [
+            {Members:"Gany",top20:"No",stage1Rank:"37",stage1Points:"248506",mouthHeadgear:"No",mask:"Yes",card:"No"},
+            {Members:"Chaz",top20:"No",stage1Rank:"43",stage1Points:"225510",mouthHeadgear:"No",mask:"Yes",card:"No"},
+            {Members:"Greydragon",top20:"No",stage1Rank:"30",stage1Points:"288172",mouthHeadgear:"No",mask:"Yes",card:"No"},
+            {Members:"Hellesdy",top20:"No",stage1Rank:"30",stage1Points:"288172",mouthHeadgear:"No",mask:"Yes",card:"No"},
+            {Members:"Dr Kirby",top20:"No",stage1Rank:"79",stage1Points:"128769",mouthHeadgear:"No",mask:"No",card:"No"},
+            {Members:"Hanzo神",top20:"Yes",stage1Rank:"1",stage1Points:"407643",mouthHeadgear:"Yes",mask:"No",card:"No"},
+            {Members:"Kayto",top20:"Yes",stage1Rank:"1",stage1Points:"407643",mouthHeadgear:"Yes",mask:"No",card:"No"},
+            {Members:"BigMacCombao",top20:"Yes",stage1Rank:"1",stage1Points:"407643",mouthHeadgear:"Yes",mask:"No",card:"No"},
+            {Members:"Neige",top20:"No",stage1Rank:"37",stage1Points:"248506",mouthHeadgear:"No",mask:"Yes",card:"No"},
+            {Members:"Athena",top20:"No",stage1Rank:"57",stage1Points:"170603",mouthHeadgear:"No",mask:"No",card:"No"}
+        ];
+
+        // Fallback survey data (from second CSV)
+        const FALLBACK_SURVEY_DATA = [
+            {"What is your in-game Name?":"Greydragon","Do you have 2 slot headgear currently?":"2 slot eyes","What items do you want out of TI?":"2 slot mouth","Any more additional notes?":"May the odds be ever in your favor"},
+            {"What is your in-game Name?":"Hellesdy","Do you have 2 slot headgear currently?":"2 slot eyes","What items do you want out of TI?":"2 slot mouth","Any more additional notes?":"Curry me thanks!"},
+            {"What is your in-game Name?":"Dr Kirby","Do you have 2 slot headgear currently?":"None of the above","What items do you want out of TI?":"2 slot eyes, 2 slot mouth","Any more additional notes?":"thx for setting this up! also cool with being lower priority on the carry list"},
+            {"What is your in-game Name?":"Neige","Do you have 2 slot headgear currently?":"2 slot eyes, 2 slot mouth","What items do you want out of TI?":"Costume","Any more additional notes?":"I can switch to any support role if needed."},
+            {"What is your in-game Name?":"Chaz","Do you have 2 slot headgear currently?":"2 slot eyes, 2 slot mouth","What items do you want out of TI?":"2 slot eyes, 2 slot mouth","Any more additional notes?":""},
+            {"What is your in-game Name?":"Athena","Do you have 2 slot headgear currently?":"None of the above","What items do you want out of TI?":"2 slot eyes, 2 slot mouth, Card album","Any more additional notes?":""},
+            {"What is your in-game Name?":"Hanzo神","Do you have 2 slot headgear currently?":"2 slot eyes","What items do you want out of TI?":"2 slot mouth, Card album","Any more additional notes?":"Top DPS"},
+            {"What is your in-game Name?":"Kayto","Do you have 2 slot headgear currently?":"None of the above","What items do you want out of TI?":"2 slot eyes, 2 slot mouth","Any more additional notes?":""},
+            {"What is your in-game Name?":"BigMacCombao","Do you have 2 slot headgear currently?":"2 slot eyes, 2 slot mouth","What items do you want out of TI?":"2 slot eyes, 2 slot mouth, Card album","Any more additional notes?":"Main tank"}
+        ];
+
+        let allMembers = [];
+        let filteredMembers = [];
+        let sortColumn = 'stage1Rank';
+        let sortDirection = 'asc';
+
+        // Parse CSV data with support for quoted fields
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+
+            // Parse header
+            const headers = parseCSVLine(lines[0]);
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length < 2) continue;
+
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                data.push(row);
+            }
+
+            return data;
+        }
+
+        // Parse a single CSV line handling quotes
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        // Merge data from both CSV sources
+        function mergeData(memberData, surveyData) {
+            const surveyMap = {};
+            surveyData.forEach(row => {
+                const name = row['What is your in-game Name?'];
+                if (name) {
+                    surveyMap[name] = row;
+                }
+            });
+
+            return memberData.map(member => {
+                const memberName = member.Members || member.name;
+                const survey = surveyMap[memberName] || {};
+                
+                // Parse what they currently have BEFORE Stage 2 (from survey)
+                const currentlyHas = survey['Do you have 2 slot headgear currently?'] || '';
+                const hasEyes = currentlyHas.includes('2 slot eyes') ? 'Yes' : 'No';
+                const hasMouth = currentlyHas.includes('2 slot mouth') ? 'Yes' : 'No';
+                
+                // Parse what they EARNED from Stage 2 (from member CSV)
+                const earnedMouth = member.mouthHeadgear === 'Yes';
+                const earnedEyes = member.mask === 'Yes';
+                const earnedCard = member.card === 'Yes';
+                
+                // Parse what they want from survey
+                const wantItems = survey['What items do you want out of TI?'] || '';
+                const wantEyes = wantItems.includes('2 slot eyes');
+                const wantMouth = wantItems.includes('2 slot mouth');
+                const wantCard = wantItems.includes('Card album');
+                
+                // Extract other wants (anything that's not the standard items)
+                let otherWants = wantItems;
+                otherWants = otherWants.replace(/2 slot eyes/gi, '');
+                otherWants = otherWants.replace(/2 slot mouth/gi, '');
+                otherWants = otherWants.replace(/Card album/gi, '');
+                otherWants = otherWants.replace(/,\s*,/g, ',').replace(/^,\s*|,\s*$/g, '').trim();
+                
+                return {
+                    name: memberName,
+                    top20: member.top20 || '',
+                    stage1Rank: member.stage1Rank || '',
+                    stage1Points: member.stage1Points || '',
+                    hasEyes: hasEyes,
+                    hasMouth: hasMouth,
+                    earnedEyes: earnedEyes,
+                    earnedMouth: earnedMouth,
+                    earnedCard: earnedCard,
+                    wantEyes: wantEyes,
+                    wantMouth: wantMouth,
+                    wantCard: wantCard,
+                    otherWants: otherWants,
+                    notes: survey['Any more additional notes?'] || ''
+                };
+            });
+        }
+
+        // Fetch data from Google Sheets
+        async function fetchData() {
+            const statusEl = document.getElementById('status');
+            const errorContainer = document.getElementById('error-container');
+            
+            let memberData = [];
+            let surveyData = [];
+            let errors = [];
+
+            try {
+                statusEl.textContent = 'Fetching member data...';
+                const response1 = await fetch(CSV_URLS[0]);
+                if (!response1.ok) throw new Error(`HTTP error! status: ${response1.status}`);
+                const csvText1 = await response1.text();
+                memberData = parseCSV(csvText1);
+            } catch (error) {
+                console.error('Error fetching member data:', error);
+                errors.push(`Member data: ${error.message}`);
+            }
+
+            try {
+                statusEl.textContent = 'Fetching survey data...';
+                const response2 = await fetch(CSV_URLS[1]);
+                if (!response2.ok) throw new Error(`HTTP error! status: ${response2.status}`);
+                const csvText2 = await response2.text();
+                surveyData = parseCSV(csvText2);
+            } catch (error) {
+                console.error('Error fetching survey data:', error);
+                errors.push(`Survey data: ${error.message}`);
+            }
+
+            // Use fallback data if fetch fails
+            if (memberData.length === 0) {
+                errorContainer.innerHTML = '<div class="error">Failed to fetch data from Google Sheets. Using fallback data for demonstration.</div>';
+                statusEl.textContent = 'Using fallback data';
+                memberData = FALLBACK_MEMBER_DATA;
+                surveyData = FALLBACK_SURVEY_DATA;
+            } else if (errors.length > 0) {
+                errorContainer.innerHTML = `<div class="error">Some data failed to load: ${errors.join(', ')}</div>`;
+                statusEl.textContent = 'Partial data loaded';
+            } else {
+                statusEl.textContent = 'Data loaded successfully';
+            }
+
+            return mergeData(memberData, surveyData);
+        }
+
+        // Get rank badge class
+        function getRankBadgeClass(rank) {
+            const r = parseInt(rank);
+            if (isNaN(r) || !rank) return '';
+            if (r === 1) return 'badge-rank-1';
+            if (r >= 2 && r <= 3) return 'badge-rank-2';
+            if (r >= 4 && r <= 10) return 'badge-rank-3';
+            return 'badge-rank';
+        }
+
+        // Format want field - shows (Obtained) if they wanted it AND earned it from Stage 2
+        function formatWantField(wants, earned) {
+            if (!wants) return '<span class="badge badge-no">No</span>';
+            if (earned) {
+                return '<span class="badge badge-obtained">(Obtained)</span>';
+            }
+            return '<span class="badge badge-yes">Yes</span>';
+        }
+
+        // Sort members
+        function sortMembers(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+
+            filteredMembers.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+
+                // Handle numeric columns
+                if (column === 'stage1Rank' || column === 'stage1Points') {
+                    aVal = parseInt(aVal) || Infinity;
+                    bVal = parseInt(bVal) || Infinity;
+                } else if (typeof aVal === 'boolean') {
+                    aVal = aVal ? 1 : 0;
+                    bVal = bVal ? 1 : 0;
+                } else {
+                    // Handle string columns
+                    aVal = (aVal || '').toString().toLowerCase();
+                    bVal = (bVal || '').toString().toLowerCase();
+                }
+
+                if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+                if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderTable();
+        }
+
+        // Render table
+        function renderTable() {
+            const tableContent = document.getElementById('tableContent');
+            const memberCount = document.getElementById('memberCount');
+            
+            memberCount.textContent = `Showing ${filteredMembers.length} of ${allMembers.length} members`;
+
+            if (filteredMembers.length === 0) {
+                tableContent.innerHTML = '<div class="loading">No members match the current filters.</div>';
+                return;
+            }
+
+            const getSortClass = (column) => {
+                if (sortColumn === column) {
+                    return sortDirection === 'asc' ? 'sort-asc' : 'sort-desc';
+                }
+                return 'sortable';
+            };
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
+                            <th class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
+                            <th class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
+                            <th class="${getSortClass('hasEyes')} center" onclick="sortMembers('hasEyes')">Has Eyes</th>
+                            <th class="${getSortClass('hasMouth')} center" onclick="sortMembers('hasMouth')">Has Mouth</th>
+                            <th class="${getSortClass('wantEyes')} center" onclick="sortMembers('wantEyes')">Want Eyes</th>
+                            <th class="${getSortClass('wantMouth')} center" onclick="sortMembers('wantMouth')">Want Mouth</th>
+                            <th class="${getSortClass('wantCard')} center" onclick="sortMembers('wantCard')">Want Card</th>
+                            <th class="${getSortClass('otherWants')}" onclick="sortMembers('otherWants')">Other Wants</th>
+                            <th class="${getSortClass('notes')}" onclick="sortMembers('notes')">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filteredMembers.forEach(member => {
+                const rankBadgeClass = getRankBadgeClass(member.stage1Rank);
+                
+                html += `
+                    <tr>
+                        <td><strong>${member.name}</strong></td>
+                        <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
+                        <td class="center">${member.stage1Rank ? `<span class="badge ${rankBadgeClass}">#${member.stage1Rank}</span>` : '-'}</td>
+                        <td class="center">${member.stage1Points ? parseInt(member.stage1Points).toLocaleString() : '-'}</td>
+                        <td class="center">${member.hasEyes === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
+                        <td class="center">${member.hasMouth === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
+                        <td class="center">${formatWantField(member.wantEyes, member.earnedEyes)}</td>
+                        <td class="center">${formatWantField(member.wantMouth, member.earnedMouth)}</td>
+                        <td class="center">${member.wantCard ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>'}</td>
+                        <td class="text-cell" title="${member.otherWants}">${member.otherWants || '-'}</td>
+                        <td class="text-cell" title="${member.notes}">${member.notes || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            tableContent.innerHTML = html;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const filterTop20 = document.getElementById('filterTop20').value;
+            const filterRank = document.getElementById('filterRank').value;
+            const filterHasEyes = document.getElementById('filterHasEyes').value;
+            const filterHasMouth = document.getElementById('filterHasMouth').value;
+            const filterWantEyes = document.getElementById('filterWantEyes').value;
+            const filterWantMouth = document.getElementById('filterWantMouth').value;
+            const filterWantCard = document.getElementById('filterWantCard').value;
+
+            filteredMembers = allMembers.filter(member => {
+                // Search filter
+                if (searchTerm) {
+                    const matchesName = member.name.toLowerCase().includes(searchTerm);
+                    if (!matchesName) return false;
+                }
+
+                // Top 20 filter
+                if (filterTop20) {
+                    if (filterTop20 === 'Yes' && member.top20.toLowerCase() !== 'yes') return false;
+                    if (filterTop20 === 'No' && member.top20.toLowerCase() === 'yes') return false;
+                }
+
+                // Rank filter
+                if (filterRank) {
+                    const rank = parseInt(member.stage1Rank);
+                    if (filterRank === 'unranked' && member.stage1Rank) return false;
+                    if (filterRank === '1-10' && (isNaN(rank) || rank < 1 || rank > 10)) return false;
+                    if (filterRank === '11-50' && (isNaN(rank) || rank < 11 || rank > 50)) return false;
+                    if (filterRank === '51-100' && (isNaN(rank) || rank < 51 || rank > 100)) return false;
+                    if (filterRank === '101+' && (isNaN(rank) || rank < 101)) return false;
+                }
+
+                // Has filters
+                if (filterHasEyes && member.hasEyes !== filterHasEyes) return false;
+                if (filterHasMouth && member.hasMouth !== filterHasMouth) return false;
+
+                // Want filters with Obtained option (based on Stage 2 rewards earned)
+                if (filterWantEyes) {
+                    if (filterWantEyes === 'Yes' && (!member.wantEyes || member.earnedEyes)) return false;
+                    if (filterWantEyes === 'Obtained' && !(member.wantEyes && member.earnedEyes)) return false;
+                    if (filterWantEyes === 'No' && member.wantEyes) return false;
+                }
+                if (filterWantMouth) {
+                    if (filterWantMouth === 'Yes' && (!member.wantMouth || member.earnedMouth)) return false;
+                    if (filterWantMouth === 'Obtained' && !(member.wantMouth && member.earnedMouth)) return false;
+                    if (filterWantMouth === 'No' && member.wantMouth) return false;
+                }
+                if (filterWantCard) {
+                    if (filterWantCard === 'Yes' && !member.wantCard) return false;
+                    if (filterWantCard === 'No' && member.wantCard) return false;
+                }
+
+                return true;
+            });
+
+            sortMembers(sortColumn);
+        }
+
+        // Event listeners
+        document.getElementById('searchBox').addEventListener('input', applyFilters);
+        document.getElementById('filterTop20').addEventListener('change', applyFilters);
+        document.getElementById('filterRank').addEventListener('change', applyFilters);
+        document.getElementById('filterHasEyes').addEventListener('change', applyFilters);
+        document.getElementById('filterHasMouth').addEventListener('change', applyFilters);
+        document.getElementById('filterWantEyes').addEventListener('change', applyFilters);
+        document.getElementById('filterWantMouth').addEventListener('change', applyFilters);
+        document.getElementById('filterWantCard').addEventListener('change', applyFilters);
+
+        // Make sortMembers available globally
+        window.sortMembers = sortMembers;
+
+        // Initialize
+        async function init() {
+            allMembers = await fetchData();
+            filteredMembers = [...allMembers];
+            sortMembers('stage1Rank'); // Default sort by rank
+        }
+
+        init();
     </script>
 </body>
 </html>
