@@ -118,6 +118,23 @@
             cursor: pointer;
         }
 
+        .reset-button {
+            padding: 10px 20px;
+            background: #dc2626;
+            border: none;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 12px;
+        }
+
+        .reset-button:hover {
+            background: #b91c1c;
+        }
+
         .availability-row {
             grid-column: 1 / -1;
             border-top: 1px solid rgba(168, 85, 247, 0.2);
@@ -536,6 +553,7 @@
                             </div>
                         </div>
                     </div>
+                    <button class="reset-button" onclick="resetFilters()">🔄 Reset All Filters</button>
                 </div>
             </div>
         </div>
@@ -848,6 +866,7 @@
                     <thead>
                         <tr>
                             <th class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th class="${getSortClass('class')}" onclick="sortMembers('class')">Class</th>
                             <th class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
                             <th class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
                             <th class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
@@ -870,6 +889,7 @@
                 html += `
                     <tr class="${isSelected ? 'selected' : ''}" onclick="toggleExpandPlayer(${index})">
                         <td><strong>${member.name}</strong></td>
+                        <td>${member.class || '-'}</td>
                         <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
                         <td class="center">${member.stage1Rank ? `<span class="badge ${rankBadgeClass}">#${member.stage1Rank}</span>` : '-'}</td>
                         <td class="center">${member.stage1Points ? parseInt(member.stage1Points).toLocaleString() : '-'}</td>
@@ -887,7 +907,7 @@
                 if (isSelected) {
                     html += `
                         <tr class="expand-row">
-                            <td colspan="11">
+                            <td colspan="12">
                                 <div class="expand-content">
                                     <div class="expand-item">
                                         <span class="expand-label">Has 2 Slot Eyes</span>
@@ -949,6 +969,7 @@
                     <thead>
                         <tr>
                             <th class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th class="${getSortClass('class')}" onclick="sortMembers('class')">Class</th>
                             <th class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
                             <th class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
                             <th class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
@@ -971,6 +992,7 @@
                 html += `
                     <tr class="${isSelected ? 'selected' : ''}" onclick="toggleExpandGear(${index})">
                         <td><strong>${member.name}</strong></td>
+                        <td>${member.class || '-'}</td>
                         <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
                         <td class="center">${member.stage1Rank ? `<span class="badge ${rankBadgeClass}">#${member.stage1Rank}</span>` : '-'}</td>
                         <td class="center">${member.stage1Points ? parseInt(member.stage1Points).toLocaleString() : '-'}</td>
@@ -988,7 +1010,7 @@
                 if (isSelected) {
                     html += `
                         <tr class="expand-row">
-                            <td colspan="11">
+                            <td colspan="12">
                                 <div class="expand-content">
                                     <div class="expand-item">
                                         <span class="expand-label">Monday (8-11 PM)</span>
@@ -1165,6 +1187,33 @@
             }
         }
 
+        // Reset all filters
+        function resetFilters() {
+            // Reset search box
+            document.getElementById('searchBox').value = '';
+            
+            // Reset dropdown filters
+            document.getElementById('filterTop20').value = '';
+            document.getElementById('filterRank').value = '';
+            document.getElementById('filterHasEyes').value = '';
+            document.getElementById('filterHasMouth').value = '';
+            document.getElementById('filterWantEyes').value = '';
+            document.getElementById('filterWantMouth').value = '';
+            document.getElementById('filterWantCard').value = '';
+            
+            // Reset checkbox filters
+            document.getElementById('filterMonday').checked = false;
+            document.getElementById('filterTuesday').checked = false;
+            document.getElementById('filterWednesday').checked = false;
+            document.getElementById('filterThursday').checked = false;
+            document.getElementById('filterFriday').checked = false;
+            document.getElementById('filterSaturday').checked = false;
+            document.getElementById('filterSunday').checked = false;
+            
+            // Apply filters (which will now show all members)
+            applyFilters();
+        }
+
         // Event listeners
         document.getElementById('searchBox').addEventListener('input', applyFilters);
         document.getElementById('filterTop20').addEventListener('change', applyFilters);
@@ -1187,6 +1236,7 @@
         window.switchTab = switchTab;
         window.toggleExpandPlayer = toggleExpandPlayer;
         window.toggleExpandGear = toggleExpandGear;
+        window.resetFilters = resetFilters;
 
         // Initialize
         async function init() {
