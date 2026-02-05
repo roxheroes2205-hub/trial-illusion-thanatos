@@ -641,14 +641,6 @@
 
         // Merge data
         function mergeData(memberData, surveyData) {
-            if (memberData.length > 0) {
-                console.log('Member data columns:', Object.keys(memberData[0]));
-                console.log('First member object:', memberData[0]);
-            }
-            if (surveyData.length > 0) {
-                console.log('Survey data columns:', Object.keys(surveyData[0]));
-            }
-            
             const surveyMap = {};
             surveyData.forEach(row => {
                 const name = row['What is your in-game Name?'];
@@ -798,6 +790,8 @@
                 const bRank = parseInt(b.stage1Rank) || Infinity;
                 return aRank - bRank;
             });
+            
+            renderTable();
         }
 
         // Sort members
@@ -1040,11 +1034,9 @@
             const memberCount = document.getElementById('memberCount');
             memberCount.textContent = `Showing ${filteredMembers.length} of ${allMembers.length} members`;
 
-            if (currentTab === 'player-finder') {
-                renderPlayerFinderTable();
-            } else {
-                renderGearTrackerTable();
-            }
+            // Always render both tables so filters work regardless of active tab
+            renderPlayerFinderTable();
+            renderGearTrackerTable();
         }
 
         // Toggle expand for Player Finder
