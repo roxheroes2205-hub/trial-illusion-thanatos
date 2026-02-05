@@ -99,6 +99,43 @@
             border-color: #a78bfa;
         }
 
+        /* Tab styles */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #c4b5fd;
+        }
+
+        .tab.active {
+            color: #a78bfa;
+            border-bottom-color: #a78bfa;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         .table-container {
             background: rgba(30, 41, 59, 0.5);
             backdrop-filter: blur(10px);
@@ -151,8 +188,18 @@
             border-bottom: 1px solid rgba(71, 85, 105, 0.5);
         }
 
+        tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
         tr:hover {
             background: rgba(71, 85, 105, 0.3);
+        }
+
+        tr.selected {
+            background: rgba(167, 139, 250, 0.2);
+            border-left: 3px solid #a78bfa;
         }
 
         .center {
@@ -234,6 +281,55 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        /* Player detail panel */
+        .detail-panel {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .detail-panel.active {
+            display: block;
+        }
+
+        .detail-panel h3 {
+            color: #a78bfa;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .availability-check {
+            font-size: 18px;
         }
     </style>
 </head>
@@ -325,10 +421,97 @@
             </div>
         </div>
 
+        <!-- Tabs -->
         <div class="table-container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('player-finder')">Player Finder</button>
+                <button class="tab" onclick="switchTab('gear-tracker')">Gear Tracker</button>
+            </div>
+
             <div class="count" id="memberCount">Loading...</div>
-            <div id="tableContent">
-                <div class="loading">Loading guild members...</div>
+
+            <!-- Player Finder Tab -->
+            <div id="player-finder" class="tab-content active">
+                <div id="playerFinderTable">
+                    <div class="loading">Loading player data...</div>
+                </div>
+                
+                <!-- Detail Panel -->
+                <div id="detailPanel" class="detail-panel">
+                    <h3 id="detailName">Select a player to view details</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Has 2 Slot Eyes</span>
+                            <span class="detail-value" id="detailHasEyes">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Has 2 Slot Mouth</span>
+                            <span class="detail-value" id="detailHasMouth">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Want 2 Slot Eyes</span>
+                            <span class="detail-value" id="detailWantEyes">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Want 2 Slot Mouth</span>
+                            <span class="detail-value" id="detailWantMouth">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Want Card</span>
+                            <span class="detail-value" id="detailWantCard">-</span>
+                        </div>
+                    </div>
+                    <div class="detail-item" style="margin-bottom: 12px;">
+                        <span class="detail-label">Other Wants</span>
+                        <span class="detail-value" id="detailOtherWants">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Notes</span>
+                        <span class="detail-value" id="detailNotes">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gear Tracker Tab -->
+            <div id="gear-tracker" class="tab-content">
+                <div id="gearTrackerTable">
+                    <div class="loading">Loading gear data...</div>
+                </div>
+                
+                <!-- Availability Detail Panel for Gear Tracker -->
+                <div id="availabilityPanel" class="detail-panel">
+                    <h3 id="availabilityName">Select a player to view availability</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Monday (8-11 PM)</span>
+                            <span class="detail-value" id="availMonday">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tuesday (8-11 PM)</span>
+                            <span class="detail-value" id="availTuesday">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Wednesday (8-11 PM)</span>
+                            <span class="detail-value" id="availWednesday">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Thursday (8-11 PM)</span>
+                            <span class="detail-value" id="availThursday">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Friday (8-11 PM)</span>
+                            <span class="detail-value" id="availFriday">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Saturday (8-11 PM)</span>
+                            <span class="detail-value" id="availSaturday">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Sunday (8-11 PM)</span>
+                            <span class="detail-value" id="availSunday">-</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -339,44 +522,30 @@
             'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7yYEdRoFayPUvpP678ge6jqk2aGdWlUFFAnFlN5eGo3Y3EcpeNSBMAanL_7IqNUe5gwATBaoQ1eAH/pub?output=csv'
         ];
 
-        // Fallback member data (from first CSV) - includes Stage 2 rewards
+        // Fallback member data
         const FALLBACK_MEMBER_DATA = [
-            {Members:"Gany",top20:"No",stage1Rank:"37",stage1Points:"248506",mouthHeadgear:"No",mask:"Yes",card:"No"},
-            {Members:"Chaz",top20:"No",stage1Rank:"43",stage1Points:"225510",mouthHeadgear:"No",mask:"Yes",card:"No"},
-            {Members:"Greydragon",top20:"No",stage1Rank:"30",stage1Points:"288172",mouthHeadgear:"No",mask:"Yes",card:"No"},
-            {Members:"Hellesdy",top20:"No",stage1Rank:"30",stage1Points:"288172",mouthHeadgear:"No",mask:"Yes",card:"No"},
-            {Members:"Dr Kirby",top20:"No",stage1Rank:"79",stage1Points:"128769",mouthHeadgear:"No",mask:"No",card:"No"},
-            {Members:"Hanzo神",top20:"Yes",stage1Rank:"1",stage1Points:"407643",mouthHeadgear:"Yes",mask:"No",card:"No"},
-            {Members:"Kayto",top20:"Yes",stage1Rank:"1",stage1Points:"407643",mouthHeadgear:"Yes",mask:"No",card:"No"},
-            {Members:"BigMacCombao",top20:"Yes",stage1Rank:"1",stage1Points:"407643",mouthHeadgear:"Yes",mask:"No",card:"No"},
-            {Members:"Neige",top20:"No",stage1Rank:"37",stage1Points:"248506",mouthHeadgear:"No",mask:"Yes",card:"No"},
-            {Members:"Athena",top20:"No",stage1Rank:"57",stage1Points:"170603",mouthHeadgear:"No",mask:"No",card:"No"}
+            {Name:"Gany",top20:"No",stage1Rank:"37",stage1Points:"248506",mouthHeadgear:"No",mask:"Yes",card:"No"},
+            {Name:"Chaz",top20:"No",stage1Rank:"43",stage1Points:"225510",mouthHeadgear:"No",mask:"Yes",card:"No"}
         ];
 
-        // Fallback survey data (from second CSV)
+        // Fallback survey data
         const FALLBACK_SURVEY_DATA = [
-            {"What is your in-game Name?":"Greydragon","Do you have 2 slot headgear currently?":"2 slot eyes","What items do you want out of TI?":"2 slot mouth","Any more additional notes?":"May the odds be ever in your favor"},
-            {"What is your in-game Name?":"Hellesdy","Do you have 2 slot headgear currently?":"2 slot eyes","What items do you want out of TI?":"2 slot mouth","Any more additional notes?":"Curry me thanks!"},
-            {"What is your in-game Name?":"Dr Kirby","Do you have 2 slot headgear currently?":"None of the above","What items do you want out of TI?":"2 slot eyes, 2 slot mouth","Any more additional notes?":"thx for setting this up! also cool with being lower priority on the carry list"},
-            {"What is your in-game Name?":"Neige","Do you have 2 slot headgear currently?":"2 slot eyes, 2 slot mouth","What items do you want out of TI?":"Costume","Any more additional notes?":"I can switch to any support role if needed."},
-            {"What is your in-game Name?":"Chaz","Do you have 2 slot headgear currently?":"2 slot eyes, 2 slot mouth","What items do you want out of TI?":"2 slot eyes, 2 slot mouth","Any more additional notes?":""},
-            {"What is your in-game Name?":"Athena","Do you have 2 slot headgear currently?":"None of the above","What items do you want out of TI?":"2 slot eyes, 2 slot mouth, Card album","Any more additional notes?":""},
-            {"What is your in-game Name?":"Hanzo神","Do you have 2 slot headgear currently?":"2 slot eyes","What items do you want out of TI?":"2 slot mouth, Card album","Any more additional notes?":"Top DPS"},
-            {"What is your in-game Name?":"Kayto","Do you have 2 slot headgear currently?":"None of the above","What items do you want out of TI?":"2 slot eyes, 2 slot mouth","Any more additional notes?":""},
-            {"What is your in-game Name?":"BigMacCombao","Do you have 2 slot headgear currently?":"2 slot eyes, 2 slot mouth","What items do you want out of TI?":"2 slot eyes, 2 slot mouth, Card album","Any more additional notes?":"Main tank"}
+            {"What is your in-game Name?":"Greydragon","Do you have 2 slot headgear currently?":"2 slot eyes","What items do you want out of TI?":"2 slot mouth","Any more additional notes?":"May the odds be ever in your favor","Monday (8-11 PM)":"Monday (8-11 PM)","Tuesday (8-11 PM)":"Tuesday (8-11 PM)"},
+            {"What is your in-game Name?":"Dr Kirby","Do you have 2 slot headgear currently?":"None of the above","What items do you want out of TI?":"2 slot eyes, 2 slot mouth","Any more additional notes?":"thx for setting this up!","Monday (8-11 PM)":"Monday (8-11 PM)","Wednesday (8-11 PM)":"Wednesday (8-11 PM)"}
         ];
 
         let allMembers = [];
         let filteredMembers = [];
-        let sortColumn = 'stage1Rank';
-        let sortDirection = 'asc';
+        let sortColumn = 'wantEyes'; // Default sort by wants
+        let sortDirection = 'desc';
+        let currentTab = 'player-finder';
+        let selectedMember = null;
 
-        // Parse CSV data with support for quoted fields
+        // Parse CSV
         function parseCSV(csvText) {
             const lines = csvText.trim().split('\n');
             if (lines.length < 2) return [];
 
-            // Parse header
             const headers = parseCSVLine(lines[0]);
             const data = [];
 
@@ -394,7 +563,6 @@
             return data;
         }
 
-        // Parse a single CSV line handling quotes
         function parseCSVLine(line) {
             const result = [];
             let current = '';
@@ -422,9 +590,8 @@
             return result;
         }
 
-        // Merge data from both CSV sources
+        // Merge data
         function mergeData(memberData, surveyData) {
-            // Debug: Show what columns we have
             if (memberData.length > 0) {
                 console.log('Member data columns:', Object.keys(memberData[0]));
                 console.log('First member object:', memberData[0]);
@@ -442,31 +609,39 @@
             });
 
             return memberData.map(member => {
-                const memberName = member.Members || member.Name || member.name || member.Member;
+                const memberName = member.Name || member.Members || member.name || member.Member;
                 const survey = surveyMap[memberName] || {};
                 
-                // Parse what they currently have BEFORE Stage 2 (from survey)
+                // Parse current gear
                 const currentlyHas = survey['Do you have 2 slot headgear currently?'] || '';
                 const hasEyes = currentlyHas.includes('2 slot eyes') ? 'Yes' : 'No';
                 const hasMouth = currentlyHas.includes('2 slot mouth') ? 'Yes' : 'No';
                 
-                // Parse what they EARNED from Stage 2 (from member CSV)
+                // Parse earned rewards
                 const earnedMouth = (member['Mouth Headgear'] === 'Yes') || (member.mouthHeadgear === 'Yes');
                 const earnedEyes = (member.Mask === 'Yes') || (member.mask === 'Yes');
                 const earnedCard = (member.Card === 'Yes') || (member.card === 'Yes');
                 
-                // Parse what they want from survey
+                // Parse wants
                 const wantItems = survey['What items do you want out of TI?'] || '';
                 const wantEyes = wantItems.includes('2 slot eyes');
                 const wantMouth = wantItems.includes('2 slot mouth');
                 const wantCard = wantItems.includes('Card album');
                 
-                // Extract other wants (anything that's not the standard items)
+                // Extract other wants
                 let otherWants = wantItems;
                 otherWants = otherWants.replace(/2 slot eyes/gi, '');
                 otherWants = otherWants.replace(/2 slot mouth/gi, '');
                 otherWants = otherWants.replace(/Card album/gi, '');
                 otherWants = otherWants.replace(/,\s*,/g, ',').replace(/^,\s*|,\s*$/g, '').trim();
+                
+                // Parse availability
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                const availability = {};
+                days.forEach(day => {
+                    const key = `${day} (8-11 PM)`;
+                    availability[day] = survey[key] === key;
+                });
                 
                 return {
                     name: memberName,
@@ -482,12 +657,13 @@
                     wantMouth: wantMouth,
                     wantCard: wantCard,
                     otherWants: otherWants,
-                    notes: survey['Any more additional notes?'] || ''
+                    notes: survey['Any more additional notes?'] || '',
+                    availability: availability
                 };
             });
         }
 
-        // Fetch data from Google Sheets
+        // Fetch data
         async function fetchData() {
             const statusEl = document.getElementById('status');
             const errorContainer = document.getElementById('error-container');
@@ -518,9 +694,8 @@
                 errors.push(`Survey data: ${error.message}`);
             }
 
-            // Use fallback data if fetch fails
-            if (memberData.length === 0) {
-                errorContainer.innerHTML = '<div class="error">Failed to fetch data from Google Sheets. Using fallback data for demonstration.</div>';
+            if (memberData.length === 0 && surveyData.length === 0) {
+                errorContainer.innerHTML = '<div class="error">Failed to load data from URLs. Using fallback data.</div>';
                 statusEl.textContent = 'Using fallback data';
                 memberData = FALLBACK_MEMBER_DATA;
                 surveyData = FALLBACK_SURVEY_DATA;
@@ -544,13 +719,35 @@
             return 'badge-rank';
         }
 
-        // Format want field - shows (Obtained) if they wanted it AND earned it from Stage 2
+        // Format want field
         function formatWantField(wants, earned) {
             if (!wants) return '<span class="badge badge-no">No</span>';
             if (earned) {
                 return '<span class="badge badge-obtained">(Obtained)</span>';
             }
             return '<span class="badge badge-yes">Yes</span>';
+        }
+
+        // Default sort (wants priority)
+        function defaultSort() {
+            filteredMembers.sort((a, b) => {
+                // Priority 1: Want Eyes
+                if (a.wantEyes !== b.wantEyes) {
+                    return b.wantEyes ? 1 : -1;
+                }
+                // Priority 2: Want Mouth
+                if (a.wantMouth !== b.wantMouth) {
+                    return b.wantMouth ? 1 : -1;
+                }
+                // Priority 3: Want Card
+                if (a.wantCard !== b.wantCard) {
+                    return b.wantCard ? 1 : -1;
+                }
+                // Priority 4: Rank
+                const aRank = parseInt(a.stage1Rank) || Infinity;
+                const bRank = parseInt(b.stage1Rank) || Infinity;
+                return aRank - bRank;
+            });
         }
 
         // Sort members
@@ -574,7 +771,6 @@
                     aVal = aVal ? 1 : 0;
                     bVal = bVal ? 1 : 0;
                 } else {
-                    // Handle string columns
                     aVal = (aVal || '').toString().toLowerCase();
                     bVal = (bVal || '').toString().toLowerCase();
                 }
@@ -587,15 +783,73 @@
             renderTable();
         }
 
-        // Render table
-        function renderTable() {
-            const tableContent = document.getElementById('tableContent');
-            const memberCount = document.getElementById('memberCount');
+        // Render Player Finder table
+        function renderPlayerFinderTable() {
+            const container = document.getElementById('playerFinderTable');
             
-            memberCount.textContent = `Showing ${filteredMembers.length} of ${allMembers.length} members`;
-
             if (filteredMembers.length === 0) {
-                tableContent.innerHTML = '<div class="loading">No members match the current filters.</div>';
+                container.innerHTML = '<div class="loading">No members match the current filters.</div>';
+                return;
+            }
+
+            const getSortClass = (column) => {
+                if (sortColumn === column) {
+                    return sortDirection === 'asc' ? 'sort-asc' : 'sort-desc';
+                }
+                return 'sortable';
+            };
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="${getSortClass('name')}" onclick="sortMembers('name')">Name</th>
+                            <th class="${getSortClass('top20')} center" onclick="sortMembers('top20')">Top 20</th>
+                            <th class="${getSortClass('stage1Rank')} center" onclick="sortMembers('stage1Rank')">Rank</th>
+                            <th class="${getSortClass('stage1Points')} center" onclick="sortMembers('stage1Points')">Points</th>
+                            <th class="${getSortClass('availability.Monday')} center" onclick="sortMembers('availability.Monday')">Mon</th>
+                            <th class="${getSortClass('availability.Tuesday')} center" onclick="sortMembers('availability.Tuesday')">Tue</th>
+                            <th class="${getSortClass('availability.Wednesday')} center" onclick="sortMembers('availability.Wednesday')">Wed</th>
+                            <th class="${getSortClass('availability.Thursday')} center" onclick="sortMembers('availability.Thursday')">Thu</th>
+                            <th class="${getSortClass('availability.Friday')} center" onclick="sortMembers('availability.Friday')">Fri</th>
+                            <th class="${getSortClass('availability.Saturday')} center" onclick="sortMembers('availability.Saturday')">Sat</th>
+                            <th class="${getSortClass('availability.Sunday')} center" onclick="sortMembers('availability.Sunday')">Sun</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filteredMembers.forEach((member, index) => {
+                const rankBadgeClass = getRankBadgeClass(member.stage1Rank);
+                const isSelected = selectedMember && selectedMember.name === member.name ? 'selected' : '';
+                
+                html += `
+                    <tr class="${isSelected}" onclick="selectMember(${index})">
+                        <td><strong>${member.name}</strong></td>
+                        <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
+                        <td class="center">${member.stage1Rank ? `<span class="badge ${rankBadgeClass}">#${member.stage1Rank}</span>` : '-'}</td>
+                        <td class="center">${member.stage1Points ? parseInt(member.stage1Points).toLocaleString() : '-'}</td>
+                        <td class="center availability-check">${member.availability.Monday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Tuesday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Wednesday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Thursday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Friday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Saturday ? '✓' : '-'}</td>
+                        <td class="center availability-check">${member.availability.Sunday ? '✓' : '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Render Gear Tracker table
+        function renderGearTrackerTable() {
+            const container = document.getElementById('gearTrackerTable');
+            
+            if (filteredMembers.length === 0) {
+                container.innerHTML = '<div class="loading">No members match the current filters.</div>';
                 return;
             }
 
@@ -626,11 +880,12 @@
                     <tbody>
             `;
 
-            filteredMembers.forEach(member => {
+            filteredMembers.forEach((member, index) => {
                 const rankBadgeClass = getRankBadgeClass(member.stage1Rank);
+                const isSelected = selectedMember && selectedMember.name === member.name ? 'selected' : '';
                 
                 html += `
-                    <tr>
+                    <tr class="${isSelected}" onclick="selectMemberGearTracker(${index})">
                         <td><strong>${member.name}</strong></td>
                         <td class="center">${member.top20 && member.top20.toLowerCase() === 'yes' ? '<span class="badge badge-top20">Top 20</span>' : '-'}</td>
                         <td class="center">${member.stage1Rank ? `<span class="badge ${rankBadgeClass}">#${member.stage1Rank}</span>` : '-'}</td>
@@ -647,7 +902,79 @@
             });
 
             html += '</tbody></table>';
-            tableContent.innerHTML = html;
+            container.innerHTML = html;
+        }
+
+        // Render table based on current tab
+        function renderTable() {
+            const memberCount = document.getElementById('memberCount');
+            memberCount.textContent = `Showing ${filteredMembers.length} of ${allMembers.length} members`;
+
+            if (currentTab === 'player-finder') {
+                renderPlayerFinderTable();
+            } else {
+                renderGearTrackerTable();
+            }
+        }
+
+        // Select member and show details
+        function selectMember(index) {
+            if (currentTab !== 'player-finder') return;
+            
+            selectedMember = filteredMembers[index];
+            const detailPanel = document.getElementById('detailPanel');
+            
+            document.getElementById('detailName').textContent = selectedMember.name;
+            document.getElementById('detailHasEyes').innerHTML = selectedMember.hasEyes === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>';
+            document.getElementById('detailHasMouth').innerHTML = selectedMember.hasMouth === 'Yes' ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>';
+            document.getElementById('detailWantEyes').innerHTML = formatWantField(selectedMember.wantEyes, selectedMember.earnedEyes);
+            document.getElementById('detailWantMouth').innerHTML = formatWantField(selectedMember.wantMouth, selectedMember.earnedMouth);
+            document.getElementById('detailWantCard').innerHTML = selectedMember.wantCard ? '<span class="badge badge-yes">Yes</span>' : '<span class="badge badge-no">No</span>';
+            document.getElementById('detailOtherWants').textContent = selectedMember.otherWants || '-';
+            document.getElementById('detailNotes').textContent = selectedMember.notes || '-';
+            
+            detailPanel.classList.add('active');
+            renderPlayerFinderTable(); // Re-render to highlight selected row
+        }
+
+        // Select member in Gear Tracker and show availability
+        function selectMemberGearTracker(index) {
+            if (currentTab !== 'gear-tracker') return;
+            
+            selectedMember = filteredMembers[index];
+            const availabilityPanel = document.getElementById('availabilityPanel');
+            
+            document.getElementById('availabilityName').textContent = selectedMember.name;
+            
+            // Show availability for each day
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            days.forEach(day => {
+                const isAvailable = selectedMember.availability[day];
+                document.getElementById(`avail${day}`).innerHTML = isAvailable ? '<span class="badge badge-yes">Available</span>' : '<span class="badge badge-no">Not Available</span>';
+            });
+            
+            availabilityPanel.classList.add('active');
+            renderGearTrackerTable(); // Re-render to highlight selected row
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            
+            // Hide both detail panels when switching tabs and clear selection
+            document.getElementById('detailPanel').classList.remove('active');
+            document.getElementById('availabilityPanel').classList.remove('active');
+            selectedMember = null;
+            
+            renderTable();
         }
 
         // Apply filters
@@ -662,19 +989,16 @@
             const filterWantCard = document.getElementById('filterWantCard').value;
 
             filteredMembers = allMembers.filter(member => {
-                // Search filter
                 if (searchTerm) {
                     const matchesName = member.name.toLowerCase().includes(searchTerm);
                     if (!matchesName) return false;
                 }
 
-                // Top 20 filter
                 if (filterTop20) {
                     if (filterTop20 === 'Yes' && member.top20.toLowerCase() !== 'yes') return false;
                     if (filterTop20 === 'No' && member.top20.toLowerCase() === 'yes') return false;
                 }
 
-                // Rank filter
                 if (filterRank) {
                     const rank = parseInt(member.stage1Rank);
                     if (filterRank === 'unranked' && member.stage1Rank) return false;
@@ -684,11 +1008,9 @@
                     if (filterRank === '101+' && (isNaN(rank) || rank < 101)) return false;
                 }
 
-                // Has filters
                 if (filterHasEyes && member.hasEyes !== filterHasEyes) return false;
                 if (filterHasMouth && member.hasMouth !== filterHasMouth) return false;
 
-                // Want filters with Obtained option (based on Stage 2 rewards earned)
                 if (filterWantEyes) {
                     if (filterWantEyes === 'Yes' && (!member.wantEyes || member.earnedEyes)) return false;
                     if (filterWantEyes === 'Obtained' && !(member.wantEyes && member.earnedEyes)) return false;
@@ -707,7 +1029,12 @@
                 return true;
             });
 
-            sortMembers(sortColumn);
+            // Apply default sort (wants priority) when not manually sorted
+            if (sortColumn === 'wantEyes') {
+                defaultSort();
+            } else {
+                sortMembers(sortColumn);
+            }
         }
 
         // Event listeners
@@ -720,14 +1047,18 @@
         document.getElementById('filterWantMouth').addEventListener('change', applyFilters);
         document.getElementById('filterWantCard').addEventListener('change', applyFilters);
 
-        // Make sortMembers available globally
+        // Make functions globally available
         window.sortMembers = sortMembers;
+        window.switchTab = switchTab;
+        window.selectMember = selectMember;
+        window.selectMemberGearTracker = selectMemberGearTracker;
 
         // Initialize
         async function init() {
             allMembers = await fetchData();
             filteredMembers = [...allMembers];
-            sortMembers('stage1Rank'); // Default sort by rank
+            defaultSort(); // Apply default wants-based sort
+            renderTable();
         }
 
         init();
