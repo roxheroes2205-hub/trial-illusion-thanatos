@@ -591,8 +591,8 @@
 
         // Fallback member data
         const FALLBACK_MEMBER_DATA = [
-            {Name:"Gany",top20:"No",stage1Rank:"37",stage1Points:"248506",mouthHeadgear:"No",mask:"Yes",card:"No"},
-            {Name:"Chaz",top20:"No",stage1Rank:"43",stage1Points:"225510",mouthHeadgear:"No",mask:"Yes",card:"No"}
+            {Name:"Gany",Class:"Creator",top20:"No",stage1Rank:"37",stage1Points:"248506",mouthHeadgear:"No",mask:"Yes",card:"No"},
+            {Name:"Chaz",Class:"Whitesmith",top20:"No",stage1Rank:"43",stage1Points:"225510",mouthHeadgear:"No",mask:"Yes",card:"No"}
         ];
 
         // Fallback survey data
@@ -659,6 +659,8 @@
 
         // Merge data
         function mergeData(memberData, surveyData) {
+            console.log('Sample member data:', memberData[0]); // Debug log
+            
             const surveyMap = {};
             surveyData.forEach(row => {
                 const name = row['What is your in-game Name?'];
@@ -670,6 +672,12 @@
             return memberData.map(member => {
                 const memberName = member.Name || member.Members || member.name || member.Member;
                 const survey = surveyMap[memberName] || {};
+                
+                // Debug log to see member object
+                if (memberData.indexOf(member) === 0) {
+                    console.log('First member object:', member);
+                    console.log('Class value:', member.Class, member.class);
+                }
                 
                 // Parse current gear
                 const currentlyHas = survey['Do you have 2 slot headgear currently?'] || '';
@@ -705,6 +713,7 @@
                 
                 return {
                     name: memberName,
+                    class: member.Class || member.class || '',
                     top20: member['Top 20 group'] || member.top20 || member.Top20 || member['Top 20'] || member.TOP20 || '',
                     stage1Rank: member['Stage 1 Rank'] || member.stage1Rank || member.Stage1Rank || member.rank || member.Rank || '',
                     stage1Points: member['Stage 1 Points'] || member.stage1Points || member.Stage1Points || member.points || member.Points || '',
